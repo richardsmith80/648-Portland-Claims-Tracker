@@ -10,13 +10,13 @@ body{font-family:system-ui,sans-serif;background:#0a1628;color:#e2e8f0;min-heigh
 .badge{background:#0d9488;color:#f0fdfa;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
 .bar{background:#0f1f3a;padding:10px 20px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-bottom:1px solid #1e3a5f}
 .bar-label{font-size:11px;color:#4a6080;margin-right:4px;text-transform:uppercase;letter-spacing:.4px}
-.vbtn{background:transparent;border:1px solid #1e3a5f;color:#94a3b8;padding:5px 13px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500}
+.vbtn{background:transparent;border:1px solid #1e3a5f;color:#94a3b8;padding:5px 13px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;transition:all .15s}
 .vbtn.active{background:#0d9488;border-color:#0d9488;color:#fff}
 .vbtn:hover:not(.active){border-color:#0d9488;color:#0d9488}
-.mbtn{background:transparent;border:1px solid #1e3a5f;color:#94a3b8;padding:4px 11px;border-radius:14px;cursor:pointer;font-size:11px;font-weight:500}
+.mbtn{background:transparent;border:1px solid #1e3a5f;color:#94a3b8;padding:4px 11px;border-radius:14px;cursor:pointer;font-size:11px;font-weight:500;transition:all .15s}
 .mbtn.active{background:#1e3a5f;border-color:#0d9488;color:#0d9488}
 .tabs{background:#0f1f3a;display:flex;border-bottom:1px solid #1e3a5f;overflow-x:auto}
-.tab{background:transparent;border:none;border-bottom:2px solid transparent;color:#94a3b8;padding:11px 16px;cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap}
+.tab{background:transparent;border:none;border-bottom:2px solid transparent;color:#94a3b8;padding:11px 16px;cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap;transition:all .15s}
 .tab.active{border-bottom-color:#0d9488;color:#0d9488}
 .content{padding:18px 20px}
 .sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
@@ -41,6 +41,12 @@ tr:hover td{background:#0f1f3a}
 .ns p{font-size:12px;color:#94a3b8;line-height:1.6}
 .cb{background:#0f1f3a;border:1px solid #1e3a5f;border-radius:10px;padding:15px;margin-bottom:14px}
 .cb h3{font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:10px}
+.dl-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid #1a2f4a;font-size:12px}
+.dl-row:last-child{border:none}
+.dl-id{font-family:monospace;font-size:11px;color:#64748b;min-width:100px}
+.dl-label{color:#e2e8f0;flex:1;padding:0 12px}
+.dl-total{color:#0d9488;font-weight:700;min-width:80px;text-align:right}
+.alert{background:#064e3b;border:1px solid #0d9488;border-radius:8px;padding:10px 14px;font-size:12px;color:#10b981;margin-bottom:12px}
 .hidden{display:none}
 .nodata{text-align:center;padding:36px;color:#4a6080;font-size:13px}
 </style>
@@ -70,18 +76,24 @@ tr:hover td{background:#0f1f3a}
 
 <div class="bar" style="background:#0a1628">
   <span class="bar-label">Period:</span>
-  <button class="mbtn active" onclick="setMonth('YTD')">YTD</button>
-  <button class="mbtn" onclick="setMonth('w1')">May 4–8</button>
-  <button class="mbtn" onclick="setMonth('w2')">May 11–16</button>
+  <button class="mbtn active" data-m="YTD" onclick="setMonth('YTD')">YTD</button>
+  <button class="mbtn" data-m="Oct" onclick="setMonth('Oct')">Oct</button>
+  <button class="mbtn" data-m="Nov" onclick="setMonth('Nov')">Nov</button>
+  <button class="mbtn" data-m="Dec" onclick="setMonth('Dec')">Dec</button>
+  <button class="mbtn" data-m="Jan" onclick="setMonth('Jan')">Jan</button>
+  <button class="mbtn" data-m="Feb" onclick="setMonth('Feb')">Feb</button>
+  <button class="mbtn" data-m="Mar" onclick="setMonth('Mar')">Mar</button>
+  <button class="mbtn" data-m="Apr" onclick="setMonth('Apr')">Apr</button>
+  <button class="mbtn" data-m="May" onclick="setMonth('May')">May</button>
 </div>
 
 <div class="tabs">
-  <button class="tab active" onclick="setTab('summary')">Summary</button>
-  <button class="tab" onclick="setTab('weekly')">Weekly Detail</button>
-  <button class="tab" onclick="setTab('leaderboard')">Leaderboard</button>
-  <button class="tab" onclick="setTab('threshold')">90% Threshold</button>
-  <button class="tab" onclick="setTab('charts')">Charts</button>
-  <button class="tab" onclick="setTab('notes')">Performance Notes</button>
+  <button class="tab active" data-tab="summary" onclick="setTab('summary')">Summary</button>
+  <button class="tab" data-tab="weekly" onclick="setTab('weekly')">Weekly Detail</button>
+  <button class="tab" data-tab="leaderboard" onclick="setTab('leaderboard')">Leaderboard</button>
+  <button class="tab" data-tab="threshold" onclick="setTab('threshold')">75% Threshold</button>
+  <button class="tab" data-tab="notes" onclick="setTab('notes')">Performance Notes</button>
+  <button class="tab" data-tab="datalog" onclick="setTab('datalog')">Data Log</button>
 </div>
 
 <div class="content">
@@ -89,159 +101,226 @@ tr:hover td{background:#0f1f3a}
   <div id="p-weekly" class="hidden"></div>
   <div id="p-leaderboard" class="hidden"></div>
   <div id="p-threshold" class="hidden"></div>
-  <div id="p-charts" class="hidden"></div>
   <div id="p-notes" class="hidden"></div>
+  <div id="p-datalog" class="hidden"></div>
 </div>
 
 <script>
-const STAFF = ['Charles Stidham','Elizabeth Grimes','Joseph Jensen','Kayla Bergfeld',
-               'Stephanie Miles','Brandon Long','Tyler Daley','Rosemary Fulkerson','Travis Murphy'];
-
-// Data stored as arrays of {date, val} per employee per week for safe lookup
-const WEEKS = [
-  {
-    id:'w1', label:'Week of May 4–8',
-    days:['4-May','5-May','6-May','7-May','8-May'],
-    data:{
-      'Charles Stidham':   [97,10,0,3,0],
-      'Elizabeth Grimes':  [0,39,11,0,0],
-      'Joseph Jensen':     [0,1,0,0,26],
-      'Kayla Bergfeld':    [0,9,1,4,6],
-      'Stephanie Miles':   [43,8,53,0,80],
-      'Brandon Long':      [96,95,33,100,20],
-      'Tyler Daley':       [0,32,56,56,58],
-      'Rosemary Fulkerson':[0,0,0,0,0],
-      'Travis Murphy':     [0,0,16,0,0]
-    }
-  },
-  {
-    id:'w2', label:'Week of May 11–16',
-    days:['11-May','12-May','13-May','14-May','15-May','16-May'],
-    data:{
-      'Charles Stidham':   [106,74,74,2,0,0],
-      'Elizabeth Grimes':  [0,0,10,54,33,0],
-      'Joseph Jensen':     [1,0,0,36,0,0],
-      'Kayla Bergfeld':    [1,2,0,1,0,0],
-      'Stephanie Miles':   [62,27,20,29,9,0],
-      'Brandon Long':      [104,10,24,24,33,0],
-      'Tyler Daley':       [63,55,58,60,60,163],
-      'Rosemary Fulkerson':[0,0,0,19,13,0],
-      'Travis Murphy':     [3,2,0,6,0,0]
-    }
-  }
+const STAFF = [
+  'Charles Stidham','Elizabeth Grimes','Joseph Jensen','Kayla Bergfeld',
+  'Stephanie Miles','Brandon Long','Tyler Daley','Rosemary Fulkerson','Travis Murphy'
 ];
 
-let cView='team', cPeriod='YTD', cTab='summary';
+// ── RAW WEEK DATA ─────────────────────────────────────────
+// Each week: unique id, label, month tag, days array, data arrays per employee (index matches days)
+const RAW_WEEKS = [
+  // OCTOBER
+  {id:'oct1',label:'Oct 5–10',month:'Oct',days:['5-Oct','6-Oct','7-Oct','8-Oct','9-Oct','10-Oct'],
+   data:{'Charles Stidham':[0,153,83,42,74,53],'Elizabeth Grimes':[0,54,46,31,51,0],'Joseph Jensen':[0,0,12,40,14,7],'Kayla Bergfeld':[0,2,0,0,0,0],'Stephanie Miles':[0,0,0,0,0,0],'Brandon Long':[0,45,55,51,58,25],'Tyler Daley':[0,33,60,43,0,0],'Rosemary Fulkerson':[0,0,48,1,0,13],'Travis Murphy':[0,0,0,0,20,0]}},
+  {id:'oct2',label:'Oct 12–18',month:'Oct',days:['12-Oct','13-Oct','14-Oct','15-Oct','16-Oct','17-Oct','18-Oct'],
+   data:{'Charles Stidham':[113,0,36,14,2,5,115],'Elizabeth Grimes':[0,0,22,20,29,0,0],'Joseph Jensen':[0,0,0,11,21,21,0],'Kayla Bergfeld':[0,0,2,2,0,0,0],'Stephanie Miles':[0,0,0,0,0,0,0],'Brandon Long':[0,0,45,17,46,0,0],'Tyler Daley':[0,0,48,56,49,37,0],'Rosemary Fulkerson':[0,0,40,0,0,57,87],'Travis Murphy':[0,0,0,1,0,0,0]}},
+  {id:'oct3',label:'Oct 20–25',month:'Oct',days:['20-Oct','21-Oct','22-Oct','23-Oct','24-Oct','25-Oct'],
+   data:{'Charles Stidham':[67,40,0,71,60,0],'Elizabeth Grimes':[35,0,0,93,21,0],'Joseph Jensen':[26,58,31,76,0,103],'Kayla Bergfeld':[9,0,0,0,0,0],'Stephanie Miles':[0,0,0,0,0,0],'Brandon Long':[60,90,86,83,45,0],'Tyler Daley':[14,4,21,8,14,0],'Rosemary Fulkerson':[13,34,11,4,20,0],'Travis Murphy':[0,0,0,30,0,0]}},
+  {id:'oct4',label:'Oct 27–31',month:'Oct',days:['27-Oct','28-Oct','29-Oct','30-Oct','31-Oct'],
+   data:{'Charles Stidham':[83,61,57,1,6],'Elizabeth Grimes':[8,62,0,33,0],'Joseph Jensen':[32,10,40,12,19],'Kayla Bergfeld':[0,0,0,0,0],'Stephanie Miles':[0,0,0,0,0],'Brandon Long':[47,36,25,37,40],'Tyler Daley':[61,21,62,73,103],'Rosemary Fulkerson':[0,17,0,0,0],'Travis Murphy':[2,0,25,1,0]}},
+  // NOVEMBER
+  {id:'nov1',label:'Nov 2–8',month:'Nov',days:['2-Nov','3-Nov','4-Nov','5-Nov','6-Nov','7-Nov','8-Nov'],
+   data:{'Charles Stidham':[113,56,74,8,13,75,90],'Elizabeth Grimes':[0,38,35,26,42,0,0],'Joseph Jensen':[0,10,68,32,8,0,0],'Kayla Bergfeld':[0,1,0,1,0,0,0],'Stephanie Miles':[0,0,0,0,0,0,0],'Brandon Long':[0,50,54,54,36,26,0],'Tyler Daley':[0,52,8,55,58,54,0],'Rosemary Fulkerson':[13,5,14,0,0,7,0],'Travis Murphy':[0,0,0,0,14,8,0]}},
+  {id:'nov2',label:'Nov 9–15',month:'Nov',days:['9-Nov','10-Nov','11-Nov','12-Nov','13-Nov','14-Nov','15-Nov'],
+   data:{'Charles Stidham':[85,49,0,0,59,63,96],'Elizabeth Grimes':[0,0,0,13,0,0,0],'Joseph Jensen':[0,39,0,6,16,13,0],'Kayla Bergfeld':[0,0,0,0,0,0,0],'Stephanie Miles':[0,0,0,0,0,0,0],'Brandon Long':[0,46,0,33,48,50,0],'Tyler Daley':[115,5,0,26,42,65,0],'Rosemary Fulkerson':[0,0,0,21,7,0,0],'Travis Murphy':[0,0,0,0,4,0,0]}},
+  {id:'nov3',label:'Nov 17–21',month:'Nov',days:['17-Nov','18-Nov','19-Nov','20-Nov','21-Nov'],
+   data:{'Charles Stidham':[67,69,47,0,0],'Elizabeth Grimes':[27,0,5,22,0],'Joseph Jensen':[13,57,11,11,11],'Kayla Bergfeld':[0,0,0,0,0],'Stephanie Miles':[0,0,0,0,0],'Brandon Long':[43,49,48,31,43],'Tyler Daley':[54,0,46,142,53],'Rosemary Fulkerson':[26,4,8,1,8],'Travis Murphy':[0,0,22,25,6]}},
+  {id:'nov4',label:'Nov 24–28',month:'Nov',days:['24-Nov','25-Nov','26-Nov','27-Nov','28-Nov'],
+   data:{'Charles Stidham':[99,8,0,0,80],'Elizabeth Grimes':[16,0,26,0,0],'Joseph Jensen':[0,0,0,0,1],'Kayla Bergfeld':[0,0,0,0,0],'Stephanie Miles':[0,0,0,0,0],'Brandon Long':[60,32,48,0,0],'Tyler Daley':[0,7,64,0,0],'Rosemary Fulkerson':[0,0,0,0,0],'Travis Murphy':[3,0,0,0,0]}},
+  // DECEMBER
+  {id:'dec1',label:'Dec 7–13',month:'Dec',days:['7-Dec','8-Dec','9-Dec','10-Dec','11-Dec','12-Dec','13-Dec'],
+   data:{'Charles Stidham':[51,106,134,63,2,0,0],'Elizabeth Grimes':[0,12,0,58,25,0,0],'Joseph Jensen':[0,45,5,0,20,2,0],'Kayla Bergfeld':[0,0,0,0,1,1,0],'Stephanie Miles':[0,46,0,0,0,0,0],'Brandon Long':[63,85,23,9,32,38,0],'Tyler Daley':[14,2,30,0,60,53,0],'Rosemary Fulkerson':[0,0,0,6,0,0,0],'Travis Murphy':[0,12,6,0,0,0,0]}},
+  {id:'dec2',label:'Dec 14–19',month:'Dec',days:['14-Dec','15-Dec','16-Dec','17-Dec','18-Dec','19-Dec'],
+   data:{'Charles Stidham':[93,55,71,59,61,55],'Elizabeth Grimes':[0,56,30,0,24,0],'Joseph Jensen':[0,1,35,1,0,40],'Kayla Bergfeld':[0,0,1,0,0,2],'Stephanie Miles':[0,0,0,0,0,0],'Brandon Long':[0,44,31,18,45,34],'Tyler Daley':[0,55,49,47,55,51],'Rosemary Fulkerson':[0,0,0,9,0,0],'Travis Murphy':[0,19,0,0,0,16]}},
+  {id:'dec3',label:'Dec 21–26',month:'Dec',days:['21-Dec','22-Dec','23-Dec','24-Dec','25-Dec','26-Dec'],
+   data:{'Charles Stidham':[56,65,3,19,0,36],'Elizabeth Grimes':[0,21,23,0,0,0],'Joseph Jensen':[0,29,4,0,0,0],'Kayla Bergfeld':[0,0,0,0,0,0],'Stephanie Miles':[0,0,0,0,0,0],'Brandon Long':[0,15,39,0,0,0],'Tyler Daley':[0,108,95,100,0,0],'Rosemary Fulkerson':[0,0,0,0,0,2],'Travis Murphy':[0,4,0,0,0,0]}},
+  {id:'dec4',label:'Dec 28–31',month:'Dec',days:['28-Dec','29-Dec','30-Dec','31-Dec'],
+   data:{'Charles Stidham':[84,0,72,58],'Elizabeth Grimes':[0,36,0,0],'Joseph Jensen':[0,7,10,32],'Kayla Bergfeld':[0,0,0,0],'Stephanie Miles':[0,0,0,0],'Brandon Long':[54,28,3,0],'Tyler Daley':[17,57,0,58],'Rosemary Fulkerson':[0,0,0,0],'Travis Murphy':[0,0,11,1]}},
+  // JANUARY
+  {id:'jan1',label:'Jan 2–3',month:'Jan',days:['2-Jan','3-Jan'],
+   data:{'Charles Stidham':[0,96],'Elizabeth Grimes':[0,0],'Joseph Jensen':[0,0],'Kayla Bergfeld':[0,0],'Stephanie Miles':[0,0],'Brandon Long':[28,0],'Tyler Daley':[2,0],'Rosemary Fulkerson':[0,0],'Travis Murphy':[0,0]}},
+  {id:'jan2',label:'Jan 5–10',month:'Jan',days:['5-Jan','6-Jan','7-Jan','8-Jan','9-Jan','10-Jan'],
+   data:{'Charles Stidham':[68,70,0,15,2,0],'Elizabeth Grimes':[0,24,46,68,0,0],'Joseph Jensen':[0,0,19,19,0,0],'Kayla Bergfeld':[0,0,0,0,0,0],'Stephanie Miles':[0,0,0,0,0,0],'Brandon Long':[51,52,24,45,58,0],'Tyler Daley':[0,51,116,57,55,0],'Rosemary Fulkerson':[0,0,6,0,6,0],'Travis Murphy':[0,9,0,0,0,0]}},
+  {id:'jan3',label:'Jan 12–17',month:'Jan',days:['12-Jan','13-Jan','14-Jan','15-Jan','16-Jan','17-Jan'],
+   data:{'Charles Stidham':[107,65,67,0,9,122],'Elizabeth Grimes':[60,63,0,0,31,0],'Joseph Jensen':[0,0,0,0,0,0],'Kayla Bergfeld':[0,2,4,0,0,0],'Stephanie Miles':[0,0,0,0,0,0],'Brandon Long':[52,0,46,21,33,0],'Tyler Daley':[3,11,7,14,57,0],'Rosemary Fulkerson':[0,0,0,0,0,0],'Travis Murphy':[0,4,9,7,5,0]}},
+  {id:'jan4',label:'Jan 18–23',month:'Jan',days:['18-Jan','19-Jan','20-Jan','21-Jan','22-Jan','23-Jan'],
+   data:{'Charles Stidham':[103,0,68,67,1,0],'Elizabeth Grimes':[0,0,39,12,51,0],'Joseph Jensen':[0,0,0,0,47,0],'Kayla Bergfeld':[0,0,1,6,0,13],'Stephanie Miles':[0,0,0,0,0,0],'Brandon Long':[0,0,72,18,57,0],'Tyler Daley':[0,0,47,43,10,0],'Rosemary Fulkerson':[0,0,0,0,5,0],'Travis Murphy':[0,0,0,0,11,0]}},
+  {id:'jan5',label:'Jan 26–31',month:'Jan',days:['26-Jan','27-Jan','28-Jan','29-Jan','30-Jan','31-Jan'],
+   data:{'Charles Stidham':[84,62,71,62,70,0],'Elizabeth Grimes':[14,25,0,0,49,0],'Joseph Jensen':[0,1,41,20,22,0],'Kayla Bergfeld':[0,3,0,0,0,0],'Stephanie Miles':[0,0,0,0,0,0],'Brandon Long':[62,29,29,39,54,157],'Tyler Daley':[39,7,56,43,21,0],'Rosemary Fulkerson':[0,0,0,0,0,0],'Travis Murphy':[5,5,0,0,0,0]}},
+  // FEBRUARY
+  {id:'feb1',label:'Feb 2–7',month:'Feb',days:['2-Feb','3-Feb','4-Feb','5-Feb','6-Feb','7-Feb'],
+   data:{'Charles Stidham':[76,61,0,11,0,0],'Elizabeth Grimes':[0,22,0,28,38,0],'Joseph Jensen':[0,45,3,5,0,0],'Kayla Bergfeld':[0,0,0,0,2,0],'Stephanie Miles':[0,0,0,0,0,0],'Brandon Long':[120,53,47,49,57,152],'Tyler Daley':[49,135,50,52,29,0],'Rosemary Fulkerson':[0,0,1,0,0,0],'Travis Murphy':[28,0,1,1,0,0]}},
+  {id:'feb-gap',label:'Feb 8–14',month:'Feb',days:['8-Feb','9-Feb','10-Feb','11-Feb','12-Feb','13-Feb','14-Feb'],
+   data:{'Charles Stidham':  [0,111,7,77,73,56,0],
+         'Elizabeth Grimes': [0,22,11,0,0,33,0],
+         'Joseph Jensen':    [0,0,10,2,16,0,0],
+         'Kayla Bergfeld':   [0,1,0,0,0,13,0],
+         'Stephanie Miles':  [0,0,0,11,48,29,0],
+         'Brandon Long':     [0,36,37,102,57,22,144],
+         'Tyler Daley':      [0,51,3,30,53,39,0],
+         'Rosemary Fulkerson':[0,0,0,0,0,45,0],
+         'Travis Murphy':    [0,9,0,0,7,6,0]}},
+  {id:'feb2',label:'Feb 15–21',month:'Feb',days:['15-Feb','16-Feb','17-Feb','18-Feb','19-Feb','20-Feb','21-Feb'],
+   data:{'Charles Stidham':[123,0,0,88,20,0,0],'Elizabeth Grimes':[0,0,28,43,65,0,0],'Joseph Jensen':[103,0,0,3,12,0,63],'Kayla Bergfeld':[0,0,0,0,0,0,0],'Stephanie Miles':[0,0,40,48,88,47,0],'Brandon Long':[145,0,43,75,62,41,141],'Tyler Daley':[0,0,0,51,64,0,0],'Rosemary Fulkerson':[0,0,4,81,11,9,0],'Travis Murphy':[0,0,6,27,30,0,0]}},
+  {id:'feb3',label:'Feb 22–28',month:'Feb',days:['22-Feb','23-Feb','24-Feb','25-Feb','26-Feb','27-Feb','28-Feb'],
+   data:{'Charles Stidham':[0,77,106,5,85,7,0],'Elizabeth Grimes':[0,0,0,0,0,0,0],'Joseph Jensen':[0,5,52,4,22,24,0],'Kayla Bergfeld':[19,8,0,0,0,0,0],'Stephanie Miles':[0,62,47,2,34,18,0],'Brandon Long':[0,43,108,110,44,0,0],'Tyler Daley':[0,28,54,37,30,0,0],'Rosemary Fulkerson':[0,25,0,1,0,0,0],'Travis Murphy':[0,1,0,0,0,2,0]}},
+  // MARCH
+  {id:'mar1',label:'Mar 1–6',month:'Mar',days:['1-Mar','2-Mar','3-Mar','4-Mar','5-Mar','6-Mar'],
+   data:{'Charles Stidham':[94,78,85,86,12,0],'Elizabeth Grimes':[0,39,58,0,0,0],'Joseph Jensen':[0,7,14,21,0,0],'Kayla Bergfeld':[0,1,5,0,0,0],'Stephanie Miles':[0,26,4,51,56,11],'Brandon Long':[0,0,34,50,50,0],'Tyler Daley':[0,37,11,0,53,6],'Rosemary Fulkerson':[0,0,33,14,0,9],'Travis Murphy':[0,6,0,6,0,0]}},
+  {id:'mar2',label:'Mar 9–14',month:'Mar',days:['9-Mar','10-Mar','11-Mar','12-Mar','13-Mar','14-Mar'],
+   data:{'Charles Stidham':[0,111,36,130,17,62],'Elizabeth Grimes':[37,58,55,0,58,0],'Joseph Jensen':[0,52,0,10,0,0],'Kayla Bergfeld':[0,0,2,0,3,0],'Stephanie Miles':[50,44,35,31,33,0],'Brandon Long':[119,46,120,116,94,0],'Tyler Daley':[49,1,64,52,0,0],'Rosemary Fulkerson':[18,0,47,0,52,0],'Travis Murphy':[0,2,6,1,0,0]}},
+  {id:'mar3',label:'Mar 15–21',month:'Mar',days:['15-Mar','16-Mar','17-Mar','18-Mar','19-Mar','20-Mar','21-Mar'],
+   data:{'Charles Stidham':[77,77,22,0,20,11,0],'Elizabeth Grimes':[0,0,49,21,6,0,0],'Joseph Jensen':[0,0,0,0,11,0,0],'Kayla Bergfeld':[0,0,0,0,1,0,0],'Stephanie Miles':[0,11,0,42,52,31,0],'Brandon Long':[0,51,105,30,42,39,0],'Tyler Daley':[83,17,37,0,73,61,0],'Rosemary Fulkerson':[37,38,9,0,0,30,0],'Travis Murphy':[0,16,5,18,0,0,0]}},
+  {id:'mar4',label:'Mar 23–28',month:'Mar',days:['23-Mar','24-Mar','25-Mar','26-Mar','27-Mar','28-Mar'],
+   data:{'Charles Stidham':[101,36,86,12,2,0],'Elizabeth Grimes':[0,0,58,0,0,0],'Joseph Jensen':[10,1,0,27,2,0],'Kayla Bergfeld':[4,0,0,0,0,0],'Stephanie Miles':[25,25,25,10,0,0],'Brandon Long':[32,44,37,47,36,0],'Tyler Daley':[64,55,40,20,59,0],'Rosemary Fulkerson':[13,28,31,0,13,0],'Travis Murphy':[0,0,0,0,0,0]}},
+  // APRIL
+  {id:'apr1',label:'Mar 29–Apr 4',month:'Apr',days:['29-Mar','30-Mar','31-Mar','1-Apr','2-Apr','3-Apr','4-Apr'],
+   data:{'Charles Stidham':[0,104,65,6,27,0,112],'Elizabeth Grimes':[0,22,0,23,64,41,0],'Joseph Jensen':[0,0,23,5,22,0,0],'Kayla Bergfeld':[0,23,0,0,17,0,0],'Stephanie Miles':[0,0,0,0,0,0,0],'Brandon Long':[0,0,0,0,0,0,0],'Tyler Daley':[0,56,57,55,52,0,0],'Rosemary Fulkerson':[0,0,8,13,0,3,0],'Travis Murphy':[0,24,14,22,34,0,0]}},
+  {id:'apr2',label:'Apr 5–11',month:'Apr',days:['5-Apr','6-Apr','7-Apr','8-Apr','9-Apr','10-Apr','11-Apr'],
+   data:{'Charles Stidham':[0,81,81,22,9,10,0],'Elizabeth Grimes':[0,0,0,0,5,47,0],'Joseph Jensen':[0,27,48,0,3,0,0],'Kayla Bergfeld':[0,0,0,0,1,1,0],'Stephanie Miles':[0,40,62,41,0,0,0],'Brandon Long':[0,30,32,34,36,37,0],'Tyler Daley':[130,53,30,63,53,49,0],'Rosemary Fulkerson':[0,0,4,8,1,5,0],'Travis Murphy':[0,0,0,1,0,0,0]}},
+  {id:'apr3',label:'Apr 12–17',month:'Apr',days:['12-Apr','13-Apr','14-Apr','15-Apr','16-Apr','17-Apr'],
+   data:{'Charles Stidham':[116,73,5,19,3,25],'Elizabeth Grimes':[0,30,0,24,0,42],'Joseph Jensen':[0,5,0,5,22,0],'Kayla Bergfeld':[0,20,6,1,0,0],'Stephanie Miles':[0,60,20,31,16,57],'Brandon Long':[0,43,36,36,44,35],'Tyler Daley':[0,42,52,16,56,50],'Rosemary Fulkerson':[0,5,8,7,0,0],'Travis Murphy':[0,0,0,0,0,0]}},
+  {id:'apr4',label:'Apr 20–25',month:'Apr',days:['20-Apr','21-Apr','22-Apr','23-Apr','24-Apr','25-Apr'],
+   data:{'Charles Stidham':[0,109,8,32,13,0],'Elizabeth Grimes':[0,10,50,0,0,0],'Joseph Jensen':[0,0,0,27,3,0],'Kayla Bergfeld':[0,0,0,1,0,0],'Stephanie Miles':[15,26,29,39,14,0],'Brandon Long':[34,108,98,37,43,145],'Tyler Daley':[11,64,58,59,55,0],'Rosemary Fulkerson':[0,0,12,26,0,0],'Travis Murphy':[0,11,2,0,0,0]}},
+  {id:'apr5',label:'Apr 26–May 1',month:'Apr',days:['26-Apr','27-Apr','28-Apr','29-Apr','30-Apr','1-May'],
+   data:{'Charles Stidham':[0,103,55,56,14,21],'Elizabeth Grimes':[0,31,0,30,48,0],'Joseph Jensen':[0,0,0,21,0,0],'Kayla Bergfeld':[0,1,3,2,4,0],'Stephanie Miles':[0,26,22,14,51,34],'Brandon Long':[55,38,101,28,16,32],'Tyler Daley':[0,0,0,0,0,0],'Rosemary Fulkerson':[20,0,0,0,0,0],'Travis Murphy':[0,0,0,0,0,0]}},
+  // MAY
+  {id:'may1',label:'May 4–8',month:'May',days:['4-May','5-May','6-May','7-May','8-May'],
+   data:{'Charles Stidham':[97,10,0,3,0],'Elizabeth Grimes':[0,39,11,0,0],'Joseph Jensen':[0,1,0,0,26],'Kayla Bergfeld':[0,9,1,4,6],'Stephanie Miles':[43,8,53,0,80],'Brandon Long':[96,95,33,100,20],'Tyler Daley':[0,32,56,56,58],'Rosemary Fulkerson':[0,0,0,0,0],'Travis Murphy':[0,0,16,0,0]}},
+  {id:'may2',label:'May 11–16',month:'May',days:['11-May','12-May','13-May','14-May','15-May','16-May'],
+   data:{'Charles Stidham':[106,74,74,2,0,0],'Elizabeth Grimes':[0,0,10,54,33,0],'Joseph Jensen':[1,0,0,36,0,0],'Kayla Bergfeld':[1,2,0,1,0,0],'Stephanie Miles':[62,27,20,29,9,0],'Brandon Long':[104,10,24,24,33,0],'Tyler Daley':[63,55,58,60,60,163],'Rosemary Fulkerson':[0,0,0,19,13,0],'Travis Murphy':[3,2,0,6,0,0]}}
+];
+
+// ── DEDUPLICATE on load ───────────────────────────────────
+const seen = new Set();
+const WEEKS = RAW_WEEKS.filter(w => {
+  if (seen.has(w.id)) return false;
+  seen.add(w.id); return true;
+});
+
+// ── MONTHLY PERIODS for 75% threshold ────────────────────
+const MONTHLY_PERIODS = [
+  {label:'October 2025',   month:'Oct'},
+  {label:'November 2025',  month:'Nov'},
+  {label:'December 2025',  month:'Dec'},
+  {label:'January 2026',   month:'Jan'},
+  {label:'February 2026',  month:'Feb'},
+  {label:'March 2026',     month:'Mar'},
+  {label:'April 2026',     month:'Apr'},
+  {label:'May 2026',       month:'May'}
+];
+
+// ── MISSING WEEKS CHECK ───────────────────────────────────
+// Expected coverage — gaps we know about
+const KNOWN_GAPS = ['Nov 29–Dec 6 (no data provided)','Dec 20 (holiday/weekend gap)','Jan 24–25 (weekend)'];
+
+let cView = 'team', cPeriod = 'YTD', cTab = 'summary';
 const chartReg = {};
 
-function wTotal(w, e) {
-  const arr = w.data[e] || [];
-  return arr.reduce((a,b)=>a+b, 0);
-}
-function wDays(w, e) {
-  const arr = w.data[e] || [];
-  return arr.filter(v=>v>0).length;
-}
-function filteredWeeks() {
-  if (cPeriod==='YTD') return WEEKS;
-  return WEEKS.filter(w=>w.id===cPeriod);
-}
-function empStats(e) {
-  let total=0, days=0;
-  filteredWeeks().forEach(w=>{ total+=wTotal(w,e); days+=wDays(w,e); });
-  return { total, days, avg: days>0 ? total/days : 0 };
-}
-function sName(n) { const p=n.split(' '); return p[0][0]+'. '+p[1]; }
+// ── HELPERS ───────────────────────────────────────────────
+function wTotal(w, e) { return (w.data[e] || []).reduce((a,b) => a+b, 0); }
+function wDays(w, e)  { return (w.data[e] || []).filter(v => v > 0).length; }
+function fWeeks()     { return cPeriod === 'YTD' ? WEEKS : WEEKS.filter(w => w.month === cPeriod); }
+function empStats(e)  { let t=0,d=0; fWeeks().forEach(w=>{t+=wTotal(w,e);d+=wDays(w,e);}); return{total:t,days:d,avg:d>0?t/d:0}; }
+function allStats(e)  { let t=0,d=0; WEEKS.forEach(w=>{t+=wTotal(w,e);d+=wDays(w,e);}); return{total:t,days:d,avg:d>0?t/d:0}; }
+function sName(n)     { const p=n.split(' '); return p[0][0]+'. '+p[1]; }
+function dc(id)       { if(chartReg[id]){try{chartReg[id].destroy();}catch(e){} delete chartReg[id];} }
 
+// ── NAVIGATION ───────────────────────────────────────────
 function setView(v) {
-  cView=v;
-  document.querySelectorAll('.vbtn').forEach(b=>{
-    const t=b.textContent.trim();
-    b.classList.toggle('active', v==='team'?t==='Full Team':t===sName(v));
-  });
+  cView = v;
+  document.querySelectorAll('.vbtn').forEach(b =>
+    b.classList.toggle('active', v==='team' ? b.textContent.trim()==='Full Team' : b.textContent.trim()===sName(v)));
   renderCurrent();
 }
 function setMonth(m) {
-  cPeriod=m;
-  document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('active',
-    (m==='YTD'&&b.textContent.trim()==='YTD')||(m==='w1'&&b.textContent.includes('4'))||(m==='w2'&&b.textContent.includes('11'))));
+  cPeriod = m;
+  document.querySelectorAll('.mbtn').forEach(b =>
+    b.classList.toggle('active', b.dataset.m === m));
   renderCurrent();
 }
 function setTab(t) {
-  cTab=t;
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.getAttribute('onclick').includes("'"+t+"'")));
-  document.querySelectorAll('[id^="p-"]').forEach(el=>el.classList.add('hidden'));
-  document.getElementById('p-'+t).classList.remove('hidden');
+  cTab = t;
+  document.querySelectorAll('.tab').forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === t));
+  document.querySelectorAll('[id^="p-"]').forEach(el => el.classList.add('hidden'));
+  const panel = document.getElementById('p-'+t);
+  if (panel) panel.classList.remove('hidden');
   renderCurrent();
 }
 
-function destroyChart(id) {
-  if (chartReg[id]) { try { chartReg[id].destroy(); } catch(e){} delete chartReg[id]; }
-}
-
+// ── RENDER DISPATCHER ─────────────────────────────────────
+const RENDERERS = {
+  summary: renderSummary, weekly: renderWeekly, leaderboard: renderLeaderboard,
+  threshold: renderThreshold, notes: renderNotes, datalog: renderDataLog
+};
 function renderCurrent() {
-  switch(cTab) {
-    case 'summary':    renderSummary(); break;
-    case 'weekly':     renderWeekly(); break;
-    case 'leaderboard':renderLeaderboard(); break;
-    case 'threshold':  renderThreshold(); break;
-    case 'charts':     renderCharts(); break;
-    case 'notes':      renderNotes(); break;
-  }
+  const fn = RENDERERS[cTab];
+  if (fn) fn();
 }
 
-// ── SUMMARY ──────────────────────────────────────────────
+// ── SUMMARY ───────────────────────────────────────────────
 function renderSummary() {
   const el = document.getElementById('p-summary');
-  let best='', bestV=0, topAvgE='', topAvg=0;
-  STAFF.forEach(e=>{ const s=empStats(e); if(s.total>bestV){bestV=s.total;best=e;} if(s.avg>topAvg){topAvg=s.avg;topAvgE=e;} });
-  const teamTotal = STAFF.reduce((a,e)=>a+empStats(e).total, 0);
-
+  if (!el) return;
+  let best='',bestV=0,topAvgE='',topAvg=0;
+  STAFF.forEach(e => {
+    const s=empStats(e);
+    if(s.total>bestV){bestV=s.total;best=e;}
+    if(s.avg>topAvg){topAvg=s.avg;topAvgE=e;}
+  });
+  const tt = STAFF.reduce((a,e) => a+empStats(e).total, 0);
   if (cView==='team') {
-    const sorted = [...STAFF].sort((a,b)=>empStats(b).total-empStats(a).total);
-    const rows = sorted.map(e=>{
+    const sorted = [...STAFF].sort((a,b) => empStats(b).total-empStats(a).total);
+    const rows = sorted.map(e => {
       const s=empStats(e);
-      return `<tr><td>${e}</td><td style="font-weight:700;color:#0d9488">${s.total}</td><td>${s.avg.toFixed(1)}</td><td>${s.days}</td></tr>`;
+      return `<tr><td>${e}</td><td style="font-weight:700;color:#0d9488">${s.total.toLocaleString()}</td><td>${s.avg.toFixed(1)}</td><td>${s.days}</td></tr>`;
     }).join('');
     el.innerHTML = `<div class="sg">
-      <div class="sc t"><div class="lbl">Team Total</div><div class="val">${teamTotal.toLocaleString()}</div><div class="sub">Claims modified</div></div>
-      <div class="sc a"><div class="lbl">Top Producer</div><div class="val">${best.split(' ')[1]}</div><div class="sub">${bestV} claims</div></div>
+      <div class="sc t"><div class="lbl">Team Total</div><div class="val">${tt.toLocaleString()}</div><div class="sub">Claims modified</div></div>
+      <div class="sc a"><div class="lbl">Top Producer</div><div class="val">${best.split(' ')[1]}</div><div class="sub">${bestV.toLocaleString()} claims</div></div>
       <div class="sc b"><div class="lbl">Best Daily Avg</div><div class="val">${topAvg.toFixed(1)}</div><div class="sub">${topAvgE.split(' ')[0]}</div></div>
-      <div class="sc p"><div class="lbl">Active Staff</div><div class="val">${STAFF.length}</div><div class="sub">Tracked employees</div></div>
+      <div class="sc p"><div class="lbl">Weeks Loaded</div><div class="val">${WEEKS.length}</div><div class="sub">Unique periods</div></div>
     </div>
-    <div class="st">Team Overview</div>
-    <table><thead><tr><th>Employee</th><th>Total Modified</th><th>Avg/Day</th><th>Days Worked</th></tr></thead><tbody>${rows}</tbody></table>`;
+    <div class="st">Team Overview – ${cPeriod==='YTD'?'Full FY2026':cPeriod}</div>
+    <table><thead><tr><th>Employee</th><th>Total Modified</th><th>Avg/Day</th><th>Days Worked</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
   } else {
     const e=cView, s=empStats(e);
-    const rows = filteredWeeks().map(w=>{
-      const t=wTotal(w,e), d=wDays(w,e);
+    const rows = fWeeks().map(w => {
+      const t=wTotal(w,e),d=wDays(w,e);
       return `<tr><td>${w.label}</td><td style="color:#0d9488;font-weight:700">${t}</td><td>${d}</td><td>${d>0?(t/d).toFixed(1):'-'}</td></tr>`;
     }).join('');
     el.innerHTML = `<div class="sg">
-      <div class="sc t"><div class="lbl">Total Modified</div><div class="val">${s.total}</div><div class="sub">Since May 1, 2026</div></div>
+      <div class="sc t"><div class="lbl">Total Modified</div><div class="val">${s.total.toLocaleString()}</div><div class="sub">${cPeriod==='YTD'?'Full FY2026':cPeriod}</div></div>
       <div class="sc b"><div class="lbl">Daily Avg</div><div class="val">${s.avg.toFixed(1)}</div><div class="sub">Excl. days off</div></div>
       <div class="sc a"><div class="lbl">Days Worked</div><div class="val">${s.days}</div><div class="sub">Days with output</div></div>
     </div>
     <div class="st">Weekly Breakdown – ${e}</div>
-    <table><thead><tr><th>Week</th><th>Total</th><th>Days</th><th>Avg/Day</th></tr></thead><tbody>${rows}</tbody></table>`;
+    <table><thead><tr><th>Week</th><th>Total</th><th>Days</th><th>Avg/Day</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
   }
 }
 
 // ── WEEKLY DETAIL ─────────────────────────────────────────
 function renderWeekly() {
   const el = document.getElementById('p-weekly');
-  const ws = filteredWeeks();
-  const vs = cView==='team' ? STAFF : [cView];
+  if (!el) return;
+  const ws=fWeeks(), vs=cView==='team'?STAFF:[cView];
   let html = '';
-  ws.forEach(w=>{
+  ws.forEach(w => {
     html += `<div class="st">${w.label}</div><table><thead><tr><th>Employee</th>`;
-    w.days.forEach(d=>{ html+=`<th>${d}</th>`; });
+    w.days.forEach(d => html += `<th>${d}</th>`);
     html += `<th>Total</th><th>Days</th><th>Avg/Day</th></tr></thead><tbody>`;
-    vs.forEach(e=>{
-      const arr = w.data[e] || w.days.map(()=>0);
-      let tot=0, days=0;
+    vs.forEach(e => {
+      const arr=w.data[e]||w.days.map(()=>0); let tot=0,days=0;
       html += `<tr><td>${e}</td>`;
-      arr.forEach(v=>{ tot+=v; if(v>0)days++; html+=`<td style="color:${v>0?'#e2e8f0':'#374f6b'}">${v>0?v:'—'}</td>`; });
+      arr.forEach(v => { tot+=v; if(v>0)days++; html+=`<td style="color:${v>0?'#e2e8f0':'#374f6b'}">${v>0?v:'—'}</td>`; });
       html += `<td style="font-weight:700;color:#0d9488">${tot}</td><td>${days}</td><td>${days>0?(tot/days).toFixed(1):'-'}</td></tr>`;
     });
     html += `</tbody></table><br>`;
@@ -252,137 +331,168 @@ function renderWeekly() {
 // ── LEADERBOARD ───────────────────────────────────────────
 function renderLeaderboard() {
   const el = document.getElementById('p-leaderboard');
-  const vs = cView==='team' ? STAFF : [cView];
-  const sorted = [...vs].sort((a,b)=>empStats(b).total-empStats(a).total);
-  const mx = empStats(sorted[0]).total || 1;
-  const medals = ['🥇','🥈','🥉'];
-  let rows = sorted.map((e,i)=>{
-    const s=empStats(e), pct=Math.round(s.total/mx*100);
-    return `<tr>
-      <td style="font-weight:700;color:#0d9488">${i+1} ${medals[i]||''}</td>
-      <td>${e}</td>
-      <td style="font-weight:700;color:#0d9488">${s.total}</td>
-      <td>${s.avg.toFixed(1)}</td>
-      <td>${s.days}</td>
-      <td><div style="background:#1e3a5f;border-radius:4px;height:8px;width:120px">
-        <div style="background:#0d9488;height:8px;border-radius:4px;width:${pct}%"></div></div></td>
-    </tr>`;
+  if (!el) return;
+  const vs=cView==='team'?STAFF:[cView];
+  const sorted=[...vs].sort((a,b)=>empStats(b).total-empStats(a).total);
+  const mx=empStats(sorted[0]).total||1;
+  const medals=['🥇','🥈','🥉'];
+  const rows=sorted.map((e,i)=>{const s=empStats(e),pct=Math.round(s.total/mx*100);
+    return`<tr><td style="font-weight:700;color:#0d9488">${i+1} ${medals[i]||''}</td><td>${e}</td>
+    <td style="font-weight:700;color:#0d9488">${s.total.toLocaleString()}</td><td>${s.avg.toFixed(1)}</td><td>${s.days}</td>
+    <td><div style="background:#1e3a5f;border-radius:4px;height:8px;width:120px">
+      <div style="background:#0d9488;height:8px;border-radius:4px;width:${pct}%"></div></div></td></tr>`;
   }).join('');
-  el.innerHTML = `<div class="st">Claims Modified Leaderboard</div>
+  el.innerHTML = `<div class="st">Leaderboard – ${cPeriod==='YTD'?'Full FY2026':cPeriod}</div>
   <table><thead><tr><th>Rank</th><th>Employee</th><th>Total</th><th>Avg/Day</th><th>Days</th><th>Progress</th></tr></thead>
   <tbody>${rows}</tbody></table>`;
 }
 
-// ── 90% THRESHOLD ─────────────────────────────────────────
+// ── 75% MONTHLY THRESHOLD ────────────────────────────────
 function renderThreshold() {
   const el = document.getElementById('p-threshold');
+  if (!el) return;
   const vs = cView==='team' ? STAFF : [cView];
-  const w1=WEEKS[0], w2=WEEKS[1];
-  let rows = vs.map(e=>{
-    const b=wTotal(w1,e), p2=wTotal(w2,e), tgt=Math.ceil(b*0.9);
-    let pill, note;
-    if (b===0) { pill=`<span class="pill am">N/A</span>`; note='No baseline output'; }
-    else if (p2>=tgt) { pill=`<span class="pill g">✓ Met</span>`; note=`+${p2-tgt} above threshold`; }
-    else { pill=`<span class="pill r">✗ Missed</span>`; note=`${tgt-p2} claims short`; }
-    return `<tr><td>${e}</td><td>${b}</td><td>${p2}</td><td>${b>0?tgt:'—'}</td><td>${pill}</td><td style="font-size:12px;color:#64748b">${note}</td></tr>`;
-  }).join('');
-  el.innerHTML = `<div class="st">90% Threshold – Policy Effective May 2026</div>
-  <p style="font-size:12px;color:#64748b;margin-bottom:12px">Baseline: May 4–8 &nbsp;|&nbsp; Comparison: May 11–16 &nbsp;|&nbsp;
-  90%+ = <span style="color:#10b981">Met</span> &nbsp;|&nbsp; Below 90% = <span style="color:#ef4444">Missed</span></p>
-  <table><thead><tr><th>Employee</th><th>Baseline (May 4–8)</th><th>Period 2 (May 11–16)</th><th>90% Target</th><th>Status</th><th>Notes</th></tr></thead>
-  <tbody>${rows}</tbody></table>`;
-}
 
-// ── CHARTS ────────────────────────────────────────────────
-function renderCharts() {
-  const el = document.getElementById('p-charts');
-  const vs = cView==='team' ? STAFF : [cView];
-  ['ch-bar','ch-avg','ch-wow'].forEach(destroyChart);
+  function monthTotal(month, e) {
+    return WEEKS.filter(w=>w.month===month).reduce((a,w)=>a+wTotal(w,e), 0);
+  }
 
-  const totals = vs.map(e=>empStats(e).total);
-  const avgs   = vs.map(e=>parseFloat(empStats(e).avg.toFixed(1)));
-  const w1t    = vs.map(e=>wTotal(WEEKS[0],e));
-  const w2t    = vs.map(e=>wTotal(WEEKS[1],e));
-  const clrs   = ['#0d9488','#3b82f6','#8b5cf6','#f59e0b','#10b981','#ef4444','#06b6d4','#a855f7','#f97316'];
-  const bh     = Math.max(280, vs.length*44);
+  // YTD totals per employee
+  const ytdByEmp = {};
+  vs.forEach(e => { ytdByEmp[e] = WEEKS.reduce((a,w)=>a+wTotal(w,e),0); });
+  const teamYTD = vs.reduce((a,e)=>a+ytdByEmp[e], 0);
 
-  el.innerHTML = `
-  <div class="cb"><h3>Total claims modified by employee</h3>
-    <div style="position:relative;width:100%;height:${bh}px"><canvas id="ch-bar" role="img" aria-label="Total claims modified per employee"></canvas></div></div>
-  <div class="cb"><h3>Daily average – active days only</h3>
-    <div style="position:relative;width:100%;height:${bh}px"><canvas id="ch-avg" role="img" aria-label="Daily average claims per employee"></canvas></div></div>
-  <div class="cb"><h3>Week-over-week comparison</h3>
-    <div style="display:flex;gap:14px;margin-bottom:8px;font-size:12px;color:#94a3b8">
-      <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#0d9488;margin-right:4px"></span>May 4–8</span>
-      <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#3b82f6;margin-right:4px"></span>May 11–16</span>
-    </div>
-    <div style="position:relative;width:100%;height:${bh}px"><canvas id="ch-wow" role="img" aria-label="Week over week comparison"></canvas></div></div>`;
+  // Build one consolidated table: rows = employees, columns = months
+  const months = MONTHLY_PERIODS;
+  const lastIdx = months.length - 1;
 
-  // Use requestAnimationFrame to ensure canvases are painted before Chart.js touches them
-  requestAnimationFrame(()=>{
-    const c1=document.getElementById('ch-bar');
-    const c2=document.getElementById('ch-avg');
-    const c3=document.getElementById('ch-wow');
-    if (!c1||!c2||!c3) return;
+  // Header
+  let html = `<div class="st">75% Monthly Threshold – FY2026</div>
+  <p style="font-size:12px;color:#64748b;margin-bottom:14px">
+    Each month compared to the prior month. &nbsp;
+    <span style="color:#10b981">✓</span> = 75%+ met &nbsp;|&nbsp;
+    <span style="color:#ef4444">✗</span> = missed &nbsp;|&nbsp;
+    <span style="color:#f59e0b">B</span> = baseline (first month) &nbsp;|&nbsp;
+    <span style="color:#64748b">—</span> = no prior data
+  </p>`;
 
-    const baseOpts = (data, lbl) => ({
-      type:'bar',
-      data:{ labels:vs, datasets:[{ label:lbl, data, backgroundColor:vs.map((_,i)=>clrs[i%clrs.length]), borderRadius:4 }] },
-      options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{display:false} },
-        scales:{ x:{ticks:{color:'#64748b'},grid:{color:'#1e3a5f'}}, y:{ticks:{color:'#94a3b8'},grid:{color:'#1e3a5f'}} } }
+  // YTD summary cards
+  html += `<div class="sg" style="margin-bottom:18px">
+    <div class="sc t"><div class="lbl">Team YTD Total</div><div class="val">${teamYTD.toLocaleString()}</div><div class="sub">Claims modified</div></div>`;
+  const sorted = [...vs].sort((a,b)=>ytdByEmp[b]-ytdByEmp[a]);
+  if(sorted[0]){html+=`<div class="sc a"><div class="lbl">Top Producer YTD</div><div class="val">${sorted[0].split(' ')[1]}</div><div class="sub">${ytdByEmp[sorted[0]].toLocaleString()} claims</div></div>`;}
+  if(sorted[1]){html+=`<div class="sc b"><div class="lbl">2nd Place YTD</div><div class="val">${sorted[1].split(' ')[1]}</div><div class="sub">${ytdByEmp[sorted[1]].toLocaleString()} claims</div></div>`;}
+  if(sorted[2]){html+=`<div class="sc p"><div class="lbl">3rd Place YTD</div><div class="val">${sorted[2].split(' ')[1]}</div><div class="sub">${ytdByEmp[sorted[2]].toLocaleString()} claims</div></div>`;}
+  html += `</div>`;
+
+  // Consolidated table
+  html += `<div style="overflow-x:auto"><table><thead><tr>
+    <th style="min-width:130px">Employee</th>`;
+  months.forEach((m,i) => {
+    html += `<th style="text-align:center;min-width:80px">${m.month}<br><span style="font-size:10px;font-weight:400;color:#4a6080">${i===0?'Baseline':i===lastIdx?'Current':'vs prior'}</span></th>`;
+  });
+  html += `<th style="text-align:center;min-width:90px">YTD Total</th></tr></thead><tbody>`;
+
+  vs.forEach(e => {
+    html += `<tr><td style="font-weight:500">${e}</td>`;
+    months.forEach((cur, pi) => {
+      const cT = monthTotal(cur.month, e);
+      if (pi === 0) {
+        // Baseline — just show total with amber badge
+        html += `<td style="text-align:center"><span class="pill am">B</span><br><span style="font-size:12px;color:#e2e8f0">${cT.toLocaleString()}</span></td>`;
+      } else {
+        const prev = months[pi-1];
+        const pT = monthTotal(prev.month, e);
+        const tgt = Math.ceil(pT * 0.75);
+        const isCur = pi === lastIdx;
+        if (pT === 0) {
+          html += `<td style="text-align:center"><span style="color:#4a6080;font-size:12px">—</span></td>`;
+        } else if (cT >= tgt) {
+          html += `<td style="text-align:center"><span class="pill g">✓</span><br><span style="font-size:12px;color:#e2e8f0">${cT.toLocaleString()}</span>${isCur?'<br><span style="font-size:10px;color:#f59e0b">in progress</span>':''}</td>`;
+        } else {
+          html += `<td style="text-align:center"><span class="pill r">✗</span><br><span style="font-size:12px;color:#e2e8f0">${cT.toLocaleString()}</span><br><span style="font-size:10px;color:#ef4444">-${tgt-cT}</span>${isCur?'<br><span style="font-size:10px;color:#f59e0b">in progress</span>':''}</td>`;
+        }
+      }
     });
-
-    try { chartReg['ch-bar'] = new Chart(c1, baseOpts(totals,'Claims')); } catch(e){}
-    try { chartReg['ch-avg'] = new Chart(c2, baseOpts(avgs,'Avg/Day')); } catch(e){}
-    try {
-      chartReg['ch-wow'] = new Chart(c3, {
-        type:'bar',
-        data:{ labels:vs, datasets:[
-          { label:'May 4–8',   data:w1t, backgroundColor:'#0d9488', borderRadius:3 },
-          { label:'May 11–16', data:w2t, backgroundColor:'#3b82f6', borderRadius:3 }
-        ]},
-        options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-          plugins:{ legend:{display:false} },
-          scales:{ x:{ticks:{color:'#64748b'},grid:{color:'#1e3a5f'}}, y:{ticks:{color:'#94a3b8'},grid:{color:'#1e3a5f'}} } }
-      });
-    } catch(e){}
+    html += `<td style="text-align:center;font-weight:700;color:#0d9488">${ytdByEmp[e].toLocaleString()}</td></tr>`;
   });
-}
 
-// ── PERFORMANCE NOTES ─────────────────────────────────────
-const NOTES = {
-  'Tyler Daley':       {str:'Top producer YTD with 661 claims. Rose significantly in Week 2 (459 vs 202), including a standout 163-claim Friday. Consistent presence every active day.',dev:'Monitor whether large single-day spikes reflect backlog clearing vs. sustained daily pace.',goal:'Maintain 90%+ threshold compliance bi-weekly. Explore peer mentoring opportunities.'},
-  'Brandon Long':      {str:'Second highest YTD (539). Exceptional Week 1 with 344 — highest single-week total on the team. Present all 5 days in Week 1.',dev:'Week 2 dropped to 195, triggering a missed threshold. Investigate workload or scheduling changes.',goal:'Stabilize above 190 claims/week. Target consistent 35–45 claims/day floor.'},
-  'Charles Stidham':   {str:'Strong both weeks — 110 in Week 1 (3 days) and 256 in Week 2 (4 days). High burst capacity with 106 claims on one Monday.',dev:'Thursday Week 2 dropped to 2 claims. Irregular daily patterns suggest possible interruptions.',goal:'Build to 4–5 active days/week. Target 55+ claims/day consistently.'},
-  'Stephanie Miles':   {str:'Consistent contributor both weeks — 184 in Week 1 and 147 in Week 2. Balanced daily distribution and strong Friday output (80 in Week 1).',dev:'Week 2 dip triggers a missed threshold. Review if reduced days or low Friday output is a pattern.',goal:'Hold output above 165 claims/week. Aim for 35+ claims/day every active day.'},
-  'Elizabeth Grimes':  {str:'Improved week-over-week: 50 in Week 1 (2 days) to 97 in Week 2 (3 days). Strong single-day capacity — 54 on May 14.',dev:'Only 2–3 active days per week limits total volume.',goal:'Increase to 4 active days/week. Target 40+ claims/day when present.'},
-  'Joseph Jensen':     {str:'27 claims in Week 1 and 37 in Week 2 — slight upward trend. Strong single-day output when active (36 on May 14).',dev:'Only 2 active days each week significantly limits total volume.',goal:'Build to 3–4 active days/week. Target 20+ claims/day as benchmark.'},
-  'Kayla Bergfeld':    {str:'More active in Week 1 (4 days, 20 claims). Consistent daily presence shows engagement and availability.',dev:'Low volume output both weeks. Role scope or access may be limiting throughput.',goal:'Clarify role and remove barriers. If processing is primary, target 15+ claims/day.'},
-  'Rosemary Fulkerson':{str:'Active in Week 2 only — 32 claims over 2 days. Shows solid output when present.',dev:'No Week 1 activity. Baseline cannot yet be established. Needs consistent presence.',goal:'Establish regular weekly presence and a defined daily output target by end of May.'},
-  'Travis Murphy':     {str:'Present both weeks — 16 in Week 1 (1 day) and 11 in Week 2 (3 days). Shows consistent engagement.',dev:'Very low volume overall. Investigate whether access, training, or assignment is the root cause.',goal:'Target 10+ claims/day as initial benchmark. Identify and remove processing barriers.'}
-};
-
-function renderNotes() {
-  const el = document.getElementById('p-notes');
-  const vs = cView==='team' ? STAFF : [cView];
-  let html = `<div class="st">Individual Performance Notes – FY2026</div>`;
-  vs.forEach(e=>{
-    const s=empStats(e), n=NOTES[e]||{str:'Insufficient data.',dev:'Monitor additional weeks.',goal:'Establish baseline.'};
-    let bestWk='', bestWkV=0;
-    WEEKS.forEach(w=>{ const t=wTotal(w,e); if(t>bestWkV){bestWkV=t;bestWk=w.label;} });
-    html += `<div class="nc">
-      <h3>${e}</h3>
-      <div class="yl">YTD Total: <strong style="color:#0d9488">${s.total}</strong> claims &nbsp;|&nbsp; Avg: <strong>${s.avg.toFixed(1)}/day</strong> &nbsp;|&nbsp; Days: <strong>${s.days}</strong> &nbsp;|&nbsp; Best week: <strong>${bestWk} (${bestWkV})</strong></div>
-      <div class="ns s"><div class="nt">Strengths</div><p>${n.str}</p></div>
-      <div class="ns d"><div class="nt">Development areas</div><p>${n.dev}</p></div>
-      <div class="ns gl"><div class="nt">Goals / Next steps</div><p>${n.goal}</p></div>
-    </div>`;
+  // Team totals row
+  html += `<tr style="border-top:2px solid #1e3a5f"><td style="font-weight:700;color:#0d9488">Team Total</td>`;
+  months.forEach(m => {
+    const t = vs.reduce((a,e)=>a+monthTotal(m.month,e),0);
+    html += `<td style="text-align:center;font-weight:700;color:#94a3b8">${t.toLocaleString()}</td>`;
   });
+  html += `<td style="text-align:center;font-weight:700;color:#0d9488">${teamYTD.toLocaleString()}</td></tr>`;
+  html += `</tbody></table></div>`;
+
   el.innerHTML = html;
 }
 
-// Initial render
+
+// ── PERFORMANCE NOTES ─────────────────────────────────────
+function renderNotes() {
+  const el = document.getElementById('p-notes');
+  if (!el) return;
+  const vs=cView==='team'?STAFF:[cView];
+  const allRanked=[...STAFF].sort((a,b)=>allStats(b).total-allStats(a).total);
+  let html=`<div class="st">Individual Performance Notes – FY2026</div>`;
+  vs.forEach(e=>{
+    const s=allStats(e),rank=allRanked.indexOf(e)+1;
+    let bestWk='',bestWkV=0,activeCnt=0;
+    WEEKS.forEach(w=>{const t=wTotal(w,e),d=wDays(w,e);if(d>0){activeCnt++;if(t>bestWkV){bestWkV=t;bestWk=w.label;}}});
+    const mT={};WEEKS.forEach(w=>{mT[w.month]=(mT[w.month]||0)+wTotal(w,e);});
+    const bm=Object.entries(mT).sort((a,b)=>b[1]-a[1])[0];
+    let str,dev,goal;
+    if(rank===1){str=`Top producer with ${s.total.toLocaleString()} claims FY2026. Leads the team in weekly volume across every month tracked.`;dev='Monitor workload sustainability and quality alongside volume.';goal='Maintain top ranking. Serve as the team production benchmark.';}
+    else if(rank===2){str=`Second highest FY2026 producer with ${s.total.toLocaleString()} claims. Reliable weekly presence and strong volume.`;dev='Watch for dips that may trigger threshold misses.';goal='Close gap with top producer. Target above-average output each active day.';}
+    else if(rank===3){str=`Third highest with ${s.total.toLocaleString()} claims. Strong months demonstrate high-output capacity.`;dev='Inconsistent weeks drag down overall average.';goal='Push toward top-2 production. Prioritize consistency.';}
+    else if(s.total>2000){str=`Strong contributor with ${s.total.toLocaleString()} claims FY2026. Dependable across most weeks.`;dev='Below top tier. Workflow improvements could boost throughput.';goal='Target top-3 ranking. Increase daily average through consistency.';}
+    else if(s.total>800){str=`Steady contributor with ${s.total.toLocaleString()} claims. Produces when active.`;dev='Below mid-team volume. Identify zero-output days and address causes.';goal='Set minimum daily target. Raise weekly floor.';}
+    else{str=`Has contributed ${s.total.toLocaleString()} total claims. Shows availability across the fiscal year.`;dev='Low overall volume. Investigate access, training, or role scope barriers.';goal='Establish a clear daily target and identify barriers to processing volume.';}
+    html+=`<div class="nc"><h3>${e} <span style="font-size:11px;color:#64748b;font-weight:400">— Rank #${rank} FY2026</span></h3>
+    <div class="yl">FY Total: <strong style="color:#0d9488">${s.total.toLocaleString()}</strong> &nbsp;|&nbsp;
+    Avg: <strong>${s.avg.toFixed(1)}/day</strong> &nbsp;|&nbsp;
+    Active weeks: <strong>${activeCnt} of ${WEEKS.length}</strong> &nbsp;|&nbsp;
+    Best week: <strong>${bestWk||'—'} (${bestWkV})</strong> &nbsp;|&nbsp;
+    Best month: <strong>${bm?bm[0]+' ('+bm[1].toLocaleString()+')':'—'}</strong></div>
+    <div class="ns s"><div class="nt">Strengths</div><p>${str}</p></div>
+    <div class="ns d"><div class="nt">Development areas</div><p>${dev}</p></div>
+    <div class="ns gl"><div class="nt">Goals / Next steps</div><p>${goal}</p></div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+// ── DATA LOG ──────────────────────────────────────────────
+function renderDataLog() {
+  const el = document.getElementById('p-datalog');
+  if (!el) return;
+  const monthOrder=['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May'];
+  const byMonth={};
+  WEEKS.forEach(w=>{if(!byMonth[w.month])byMonth[w.month]=[];byMonth[w.month].push(w);});
+  let html=`<div class="alert">
+    <strong>Duplicate protection active.</strong> ${WEEKS.length} unique weeks loaded. Any duplicate week IDs submitted are automatically discarded.
+  </div>
+  <div class="st">Coverage by month</div>`;
+  monthOrder.forEach(mo=>{
+    if(!byMonth[mo]) return;
+    html+=`<div style="background:#0f1f3a;border:1px solid #1e3a5f;border-radius:10px;margin-bottom:12px;overflow:hidden">
+      <div style="padding:10px 14px;background:#1e3a5f;font-size:12px;font-weight:600;color:#0d9488">${mo} 2025–2026 — ${byMonth[mo].length} week(s)</div>`;
+    byMonth[mo].forEach(w=>{
+      const tt=STAFF.reduce((a,e)=>a+wTotal(w,e),0);
+      html+=`<div class="dl-row"><span class="dl-id">${w.id}</span><span class="dl-label">${w.label}</span><span style="color:#64748b;font-size:11px;margin-right:12px">${w.days.length} days</span><span class="dl-total">${tt.toLocaleString()}</span></div>`;
+    });
+    html+=`</div>`;
+  });
+  html+=`<div class="st">Known gaps</div>
+  <div style="background:#0f1f3a;border:1px solid #1e3a5f;border-radius:10px;padding:12px 14px">
+    ${KNOWN_GAPS.map(g=>`<div style="font-size:12px;color:#64748b;padding:4px 0;border-bottom:1px solid #1a2f4a">${g}</div>`).join('')}
+    <div style="font-size:11px;color:#4a6080;padding-top:8px">Note: Feb 8–14 data has not been submitted yet. All other gaps are holidays or weekends.</div>
+  </div>`;
+  el.innerHTML=html;
+}
+
 renderCurrent();
 </script>
 </body></html>
