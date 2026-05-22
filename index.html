@@ -1,413 +1,388 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>VTP Health Fair Trifold — Mann-Grandstaff VAMC</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>VA Claims Tracker – Station 648</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* ── SCREEN TOOLBAR — hidden when printing ── */
-.toolbar {
-  background: #1a3a5c;
-  color: #fff;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  font-family: Arial, sans-serif;
-}
-.toolbar h2 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-.toolbar p { font-size: 10px; opacity: .8; }
-.pbtn {
-  padding: 7px 14px;
-  background: #c0392b;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-/* ── PAGE SETUP ── */
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #ccc;
-}
-
-/* ── EACH SHEET = ONE PRINTED PAGE ── */
-.sheet {
-  width: 11in;
-  height: 8.5in;
-  background: #fff;
-  display: flex;
-  flex-direction: row;
-  margin: 20px auto;
-  box-shadow: 0 2px 12px rgba(0,0,0,.3);
-  overflow: hidden;
-}
-
-/* ── EACH PANEL = ONE THIRD OF PAGE ── */
-.panel {
-  width: 3.667in;
-  height: 8.5in;
-  padding: 0.3in 0.28in;
-  overflow: hidden;
-  border-right: 0.5px solid #ddd;
-  flex-shrink: 0;
-}
-.panel:last-child { border-right: none; }
-
-/* ── COVER PANEL ── */
-.cover {
-  background: #1a3a5c;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  border-right: none;
-}
-
-/* ── CONTACT PANEL ── */
-.contact-panel {
-  background: #f4f7fb;
-  border-left: 5px solid #1a3a5c;
-  border-right: none;
-}
-
-/* ── SECTION HEADS ── */
-.sh {
-  display: block;
-  font-size: 7.5pt;
-  font-weight: 700;
-  letter-spacing: .4pt;
-  text-transform: uppercase;
-  color: #fff;
-  background: #1a3a5c;
-  padding: 4px 8px;
-  border-radius: 2px;
-  margin: 11px 0 7px 0;
-}
-.sh.red  { background: #c0392b; }
-.sh.teal { background: #0F6E56; }
-.sh.first { margin-top: 0; }
-
-/* ── TYPOGRAPHY ── */
-p    { font-size: 8pt; line-height: 1.55; color: #37474f; margin-bottom: 5px; }
-.lead { font-size: 9pt; font-weight: 700; color: #0d2137; line-height: 1.4; margin-bottom: 7px; }
-
-/* ── CHECKLIST ── */
-.cl { list-style: none; margin-bottom: 6px; }
-.cl li {
-  font-size: 8pt;
-  color: #37474f;
-  padding: 3px 0 3px 14px;
-  position: relative;
-  border-bottom: .5px solid #eef0f3;
-  line-height: 1.45;
-}
-.cl li:last-child { border-bottom: none; }
-.cl li::before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  color: #0F6E56;
-  font-weight: 700;
-  font-size: 8.5pt;
-}
-
-/* ── CALLOUTS ── */
-.co {
-  border-left: 3px solid;
-  padding: 5px 7px;
-  margin: 5px 0;
-  font-size: 7.5pt;
-  line-height: 1.5;
-  border-radius: 2px;
-}
-.co.blue   { background: #e8eef5; border-color: #1a3a5c; color: #0d2137; }
-.co.red    { background: #fde8e8; border-color: #c0392b; color: #7a0000; }
-.co.green  { background: #e6f4ea; border-color: #0F6E56; color: #1a4a2a; }
-.co.amber  { background: #fff8e1; border-color: #f0a500; color: #7a5300; }
-
-/* ── STEPS ── */
-.step { display: flex; gap: 6px; margin-bottom: 5px; align-items: flex-start; }
-.sn {
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  background: #1a3a5c; color: #fff;
-  font-size: 7.5pt; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; margin-top: 1px;
-}
-.st { font-size: 8pt; color: #37474f; line-height: 1.45; flex: 1; }
-
-/* ── CONTACT ITEMS ── */
-.ci { display: flex; gap: 7px; align-items: flex-start; margin-bottom: 9px; padding-bottom: 9px; border-bottom: .5px solid #d0d7de; }
-.ci:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.ci-icon { font-size: 12pt; flex-shrink: 0; width: 20px; text-align: center; }
-.ci-lbl  { font-size: 7pt; text-transform: uppercase; letter-spacing: .3pt; color: #888; display: block; margin-bottom: 1px; }
-.ci-val  { font-size: 9.5pt; font-weight: 700; color: #0d2137; display: block; }
-.ci-sub  { font-size: 7.5pt; color: #546e7a; display: block; }
-
-/* ── DEDUCTIBLE TABLE ── */
-.dt { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 7.5pt; }
-.dt th { background: #1a3a5c; color: #fff; padding: 3px 5px; text-align: left; }
-.dt td { padding: 3px 5px; border-bottom: .5px solid #d0d7de; color: #37474f; }
-.dt tr:nth-child(even) td { background: #f7f9fb; }
-.dt .free { color: #0F6E56; font-weight: 700; }
-
-/* ── QR CODE ── */
-.qr-block { text-align: center; margin: 8px 0; }
-.qr-block img { width: 100px; height: 100px; border: 2.5px solid #1a3a5c; padding: 4px; background: #fff; display: block; margin: 0 auto; }
-.qr-lbl { font-size: 7.5pt; color: #546e7a; margin-top: 4px; line-height: 1.4; }
-.qr-url { font-size: 7pt; color: #888; font-family: 'Courier New', monospace; }
-
-/* ── COVER ── */
-.seal { width: 64px; height: 64px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
-.seal-txt { font-size: 22pt; font-weight: 900; color: #1a3a5c; }
-.cv-eyebrow { font-size: 7pt; opacity: .7; letter-spacing: .5pt; text-transform: uppercase; margin-bottom: 5px; }
-.cv-title { font-size: 19pt; font-weight: 700; line-height: 1.2; margin-bottom: 6px; }
-.cv-sub { font-size: 9pt; opacity: .85; line-height: 1.55; margin-bottom: 14px; }
-.cv-div { border: none; border-top: 1px solid rgba(255,255,255,.3); margin: 10px 0; width: 100%; }
-.cv-st { font-size: 9.5pt; font-weight: 700; margin-bottom: 3px; }
-.cv-sb { font-size: 8pt; opacity: .85; line-height: 1.5; margin-bottom: 10px; }
-.cv-tag { font-size: 9pt; opacity: .75; font-style: italic; line-height: 1.6; margin: 10px 0; }
-.cv-ph  { font-size: 18pt; font-weight: 700; margin: 4px 0; }
-.cv-hrs { font-size: 8pt; opacity: .7; }
-.cv-loc { font-size: 8pt; opacity: .65; margin-top: 3px; }
-
-/* ── CTA BOX ── */
-.cta { background: #1a3a5c; color: #fff; text-align: center; padding: 10px; border-radius: 4px; margin-top: 10px; }
-.cta-num { font-size: 16pt; font-weight: 700; }
-.cta-sub { font-size: 7.5pt; opacity: .8; }
-.footer-note { font-size: 7pt; color: #888; text-align: center; margin-top: 8px; line-height: 1.5; }
-
-/* ═══════════════════════════════
-   PRINT RULES
-═══════════════════════════════ */
-@media print {
-  html, body { background: #fff !important; margin: 0; padding: 0; }
-  .toolbar { display: none !important; }
-  .sheet {
-    width: 11in;
-    height: 8.5in;
-    margin: 0;
-    box-shadow: none;
-    page-break-after: always;
-  }
-  .sheet:last-child { page-break-after: auto; }
-  @page { size: 11in 8.5in landscape; margin: 0; }
-  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0a1628;color:#e2e8f0;min-height:100vh}
+.header{background:#0a1628;border-bottom:2px solid #0d9488;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.header h1{font-size:17px;font-weight:600;color:#f0fdfa}
+.header p{font-size:12px;color:#94a3b8;margin-top:2px}
+.badge{background:#0d9488;color:#f0fdfa;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+.bar{background:#0f1f3a;padding:10px 20px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-bottom:1px solid #1e3a5f}
+.bar-label{font-size:11px;color:#4a6080;margin-right:4px;text-transform:uppercase;letter-spacing:.4px}
+.vbtn{background:transparent;border:1px solid #1e3a5f;color:#94a3b8;padding:5px 13px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500}
+.vbtn.active{background:#0d9488;border-color:#0d9488;color:#fff}
+.vbtn:hover:not(.active){border-color:#0d9488;color:#0d9488}
+.mbtn{background:transparent;border:1px solid #1e3a5f;color:#94a3b8;padding:4px 11px;border-radius:14px;cursor:pointer;font-size:11px;font-weight:500}
+.mbtn.active{background:#1e3a5f;border-color:#0d9488;color:#0d9488}
+.tabs{background:#0f1f3a;display:flex;border-bottom:1px solid #1e3a5f;overflow-x:auto}
+.tab{background:transparent;border:none;border-bottom:2px solid transparent;color:#94a3b8;padding:11px 16px;cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap}
+.tab.active{border-bottom-color:#0d9488;color:#0d9488}
+.content{padding:18px 20px}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+.sc{background:#0f1f3a;border:1px solid #1e3a5f;border-radius:10px;padding:13px 15px}
+.sc.t{border-left:3px solid #0d9488}.sc.a{border-left:3px solid #f59e0b}.sc.b{border-left:3px solid #3b82f6}.sc.p{border-left:3px solid #8b5cf6}
+.sc .lbl{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.sc .val{font-size:24px;font-weight:700;color:#f0fdfa}
+.sc .sub{font-size:11px;color:#0d9488;margin-top:3px}
+.st{font-size:12px;font-weight:600;color:#94a3b8;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#0f1f3a;color:#64748b;text-align:left;padding:9px 11px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid #1e3a5f}
+td{padding:9px 11px;border-bottom:1px solid #1a2f4a;color:#e2e8f0}
+tr:hover td{background:#0f1f3a}
+.pill{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.pill.g{background:#064e3b;color:#10b981}.pill.r{background:#450a0a;color:#ef4444}.pill.am{background:#451a03;color:#f59e0b}
+.nc{background:#0f1f3a;border:1px solid #1e3a5f;border-radius:10px;padding:15px;margin-bottom:12px}
+.nc h3{font-size:14px;font-weight:600;color:#f0fdfa;margin-bottom:3px}
+.nc .yl{font-size:12px;color:#64748b;margin-bottom:10px}
+.ns{margin-bottom:8px}
+.ns .nt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.ns.s .nt{color:#10b981}.ns.d .nt{color:#f59e0b}.ns.gl .nt{color:#3b82f6}
+.ns p{font-size:12px;color:#94a3b8;line-height:1.6}
+.cb{background:#0f1f3a;border:1px solid #1e3a5f;border-radius:10px;padding:15px;margin-bottom:14px}
+.cb h3{font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:10px}
+.hidden{display:none}
+.nodata{text-align:center;padding:36px;color:#4a6080;font-size:13px}
 </style>
 </head>
 <body>
-
-<div class="toolbar">
+<div class="header">
   <div>
-    <h2>VTP Health Fair Trifold — Mann-Grandstaff VAMC</h2>
-    <p>Save as VTP_Trifold.doc → Open in Word → File → Save As → PDF &nbsp;|&nbsp; Then print double-sided, landscape, and fold into thirds</p>
+    <h1>Portland VA Medical Center – Station 648</h1>
+    <p>Travel Claims Productivity Tracker &nbsp;|&nbsp; FY2026 (Oct 2025 – Present)</p>
   </div>
-  <button class="pbtn" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="badge">FY2026</span>
 </div>
 
-<!-- ════════════════════════════════════════════
-     SHEET 1 — FRONT SIDE
-     Left panel   = inside left (Panel 1)
-     Center panel = inside center (Panel 2)
-     Right panel  = COVER — outside face (Panel 3)
-════════════════════════════════════════════ -->
-<div class="sheet">
+<div class="bar">
+  <span class="bar-label">View:</span>
+  <button class="vbtn active" onclick="setView('team')">Full Team</button>
+  <button class="vbtn" onclick="setView('Charles Stidham')">C. Stidham</button>
+  <button class="vbtn" onclick="setView('Tyler Daley')">T. Daley</button>
+  <button class="vbtn" onclick="setView('Brandon Long')">B. Long</button>
+  <button class="vbtn" onclick="setView('Stephanie Miles')">S. Miles</button>
+  <button class="vbtn" onclick="setView('Elizabeth Grimes')">E. Grimes</button>
+  <button class="vbtn" onclick="setView('Joseph Jensen')">J. Jensen</button>
+  <button class="vbtn" onclick="setView('Kayla Bergfeld')">K. Bergfeld</button>
+  <button class="vbtn" onclick="setView('Rosemary Fulkerson')">R. Fulkerson</button>
+  <button class="vbtn" onclick="setView('Travis Murphy')">T. Murphy</button>
+</div>
 
-  <!-- FRONT PANEL 1: Inside Left -->
-  <div class="panel">
-    <span class="sh teal first">VTS — Free Rides to Your VA Appointments</span>
-    <p class="lead">The Veterans Transportation Service (VTS) provides <b>free scheduled rides</b> to and from your VA medical appointments.</p>
+<div class="bar" style="background:#0a1628">
+  <span class="bar-label">Period:</span>
+  <button class="mbtn active" onclick="setMonth('YTD')">YTD</button>
+  <button class="mbtn" onclick="setMonth('w1')">May 4–8</button>
+  <button class="mbtn" onclick="setMonth('w2')">May 11–16</button>
+</div>
 
-    <span class="sh blue">Who can use VTS?</span>
-    <ul class="cl">
-      <li>Any Veteran <b>enrolled</b> in VA health care</li>
-      <li>Scheduled appointments at VA facilities</li>
-      <li>Community care (non-VA) appointments authorized by VA</li>
-      <li>Family caregivers traveling with an eligible Veteran</li>
-    </ul>
-    <div class="co amber">VTS is available regardless of whether you qualify for Beneficiary Travel mileage reimbursement. <b>You do not need to be BT eligible to ride VTS.</b></div>
+<div class="tabs">
+  <button class="tab active" onclick="setTab('summary')">Summary</button>
+  <button class="tab" onclick="setTab('weekly')">Weekly Detail</button>
+  <button class="tab" onclick="setTab('leaderboard')">Leaderboard</button>
+  <button class="tab" onclick="setTab('threshold')">90% Threshold</button>
+  <button class="tab" onclick="setTab('charts')">Charts</button>
+  <button class="tab" onclick="setTab('notes')">Performance Notes</button>
+</div>
 
-    <span class="sh blue">How to schedule a VTS ride</span>
-    <div class="step"><div class="sn">1</div><div class="st">Call <b>509-434-7517</b> or ask your care team to request transport</div></div>
-    <div class="step"><div class="sn">2</div><div class="st">Provide your name, appointment date and time, location, and any special needs (wheelchair, oxygen, service animal)</div></div>
-    <div class="step"><div class="sn">3</div><div class="st">VTS will confirm your pickup time — schedule as early as possible</div></div>
-    <div class="step"><div class="sn">4</div><div class="st">Your driver takes you door-to-door and returns you home after your appointment</div></div>
+<div class="content">
+  <div id="p-summary"></div>
+  <div id="p-weekly" class="hidden"></div>
+  <div id="p-leaderboard" class="hidden"></div>
+  <div id="p-threshold" class="hidden"></div>
+  <div id="p-charts" class="hidden"></div>
+  <div id="p-notes" class="hidden"></div>
+</div>
 
-    <span class="sh teal">Community care appointments</span>
-    <p>VTS can also take you to <b>VA-authorized community care (non-VA) appointments</b>. Let us know it is a community care appointment when you call so we can confirm authorization.</p>
-    <div class="co green">Rides are not guaranteed same-day. Call ahead — the sooner the better.</div>
-  </div>
+<script>
+const STAFF = ['Charles Stidham','Elizabeth Grimes','Joseph Jensen','Kayla Bergfeld',
+               'Stephanie Miles','Brandon Long','Tyler Daley','Rosemary Fulkerson','Travis Murphy'];
 
-  <!-- FRONT PANEL 2: Inside Center -->
-  <div class="panel">
-    <span class="sh red first">Community Care &amp; Travel Reimbursement</span>
-    <p class="lead">If VA sends you to a non-VA provider through Community Care (TriWest), you may be able to get your travel costs reimbursed — <b>if you are BT eligible.</b></p>
-    <p>Your VA provider submits a referral to Community Care. Once TriWest issues an authorization, your appointment is VA-covered. <b>Keep your TriWest authorization</b> — you will need it to file a travel claim.</p>
-    <div class="co blue">A referral alone is not enough. You need the <b>TriWest authorization number</b> to get your travel reimbursed for community care visits.</div>
+// Data stored as arrays of {date, val} per employee per week for safe lookup
+const WEEKS = [
+  {
+    id:'w1', label:'Week of May 4–8',
+    days:['4-May','5-May','6-May','7-May','8-May'],
+    data:{
+      'Charles Stidham':   [97,10,0,3,0],
+      'Elizabeth Grimes':  [0,39,11,0,0],
+      'Joseph Jensen':     [0,1,0,0,26],
+      'Kayla Bergfeld':    [0,9,1,4,6],
+      'Stephanie Miles':   [43,8,53,0,80],
+      'Brandon Long':      [96,95,33,100,20],
+      'Tyler Daley':       [0,32,56,56,58],
+      'Rosemary Fulkerson':[0,0,0,0,0],
+      'Travis Murphy':     [0,0,16,0,0]
+    }
+  },
+  {
+    id:'w2', label:'Week of May 11–16',
+    days:['11-May','12-May','13-May','14-May','15-May','16-May'],
+    data:{
+      'Charles Stidham':   [106,74,74,2,0,0],
+      'Elizabeth Grimes':  [0,0,10,54,33,0],
+      'Joseph Jensen':     [1,0,0,36,0,0],
+      'Kayla Bergfeld':    [1,2,0,1,0,0],
+      'Stephanie Miles':   [62,27,20,29,9,0],
+      'Brandon Long':      [104,10,24,24,33,0],
+      'Tyler Daley':       [63,55,58,60,60,163],
+      'Rosemary Fulkerson':[0,0,0,19,13,0],
+      'Travis Murphy':     [3,2,0,6,0,0]
+    }
+  }
+];
 
-    <span class="sh red">How the authorization process works</span>
-    <div class="step"><div class="sn">1</div><div class="st"><b>Your VA provider</b> places a community care referral in your chart</div></div>
-    <div class="step"><div class="sn">2</div><div class="st"><b>VA Community Care office</b> reviews and approves the referral</div></div>
-    <div class="step"><div class="sn">3</div><div class="st"><b>TriWest</b> issues an authorization number to you and the provider</div></div>
-    <div class="step"><div class="sn">4</div><div class="st"><b>You attend</b> the appointment with the authorized provider</div></div>
-    <div class="step"><div class="sn">5</div><div class="st"><b>File your travel claim</b> in BTSSS within 30 days — include your TriWest authorization number</div></div>
-    <div class="co amber"><b>Important:</b> If you go to your appointment before TriWest issues the authorization, your travel claim may not be payable. Wait for your authorization when possible.</div>
+let cView='team', cPeriod='YTD', cTab='summary';
+const chartReg = {};
 
-    <span class="sh blue">Need a wheelchair van or ambulance?</span>
-    <p>If you need a wheelchair van or ambulance (Special Mode Transport) to get to any VA appointment, <b>your VA provider must place an order in advance.</b> Call us at <b>509-434-7517</b> before your appointment so we can arrange it.</p>
-  </div>
+function wTotal(w, e) {
+  const arr = w.data[e] || [];
+  return arr.reduce((a,b)=>a+b, 0);
+}
+function wDays(w, e) {
+  const arr = w.data[e] || [];
+  return arr.filter(v=>v>0).length;
+}
+function filteredWeeks() {
+  if (cPeriod==='YTD') return WEEKS;
+  return WEEKS.filter(w=>w.id===cPeriod);
+}
+function empStats(e) {
+  let total=0, days=0;
+  filteredWeeks().forEach(w=>{ total+=wTotal(w,e); days+=wDays(w,e); });
+  return { total, days, avg: days>0 ? total/days : 0 };
+}
+function sName(n) { const p=n.split(' '); return p[0][0]+'. '+p[1]; }
 
-  <!-- FRONT PANEL 3: COVER -->
-  <div class="panel cover">
-    <div class="seal"><span class="seal-txt">VA</span></div>
-    <p class="cv-eyebrow">Mann-Grandstaff VA Medical Center &bull; Spokane, WA</p>
-    <p class="cv-title">Getting to Your<br>VA Appointments</p>
-    <p class="cv-sub">Your guide to Beneficiary Travel reimbursement and free Veteran transportation services</p>
-    <hr class="cv-div">
-    <p class="cv-st">Beneficiary Travel (BT)</p>
-    <p class="cv-sb">Mileage &amp; transport cost reimbursement for eligible Veterans</p>
-    <p class="cv-st">Veterans Transportation Service (VTS)</p>
-    <p class="cv-sb">Free scheduled rides to VA appointments for all enrolled Veterans</p>
-    <hr class="cv-div">
-    <p class="cv-tag">You served us.<br>Let us help get you to your care.</p>
-    <p style="font-size:8pt;opacity:.7;color:#fff;margin-bottom:3px;">Beneficiary Travel Office</p>
-    <p class="cv-ph">509-434-7517</p>
-    <p class="cv-hrs">Monday – Friday &bull; 8:00 AM – 4:00 PM</p>
-    <p class="cv-loc">Main Building, 1st Floor &bull; Across from the elevator</p>
-  </div>
+function setView(v) {
+  cView=v;
+  document.querySelectorAll('.vbtn').forEach(b=>{
+    const t=b.textContent.trim();
+    b.classList.toggle('active', v==='team'?t==='Full Team':t===sName(v));
+  });
+  renderCurrent();
+}
+function setMonth(m) {
+  cPeriod=m;
+  document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('active',
+    (m==='YTD'&&b.textContent.trim()==='YTD')||(m==='w1'&&b.textContent.includes('4'))||(m==='w2'&&b.textContent.includes('11'))));
+  renderCurrent();
+}
+function setTab(t) {
+  cTab=t;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.getAttribute('onclick').includes("'"+t+"'")));
+  document.querySelectorAll('[id^="p-"]').forEach(el=>el.classList.add('hidden'));
+  document.getElementById('p-'+t).classList.remove('hidden');
+  renderCurrent();
+}
 
-</div><!-- end sheet 1 -->
+function destroyChart(id) {
+  if (chartReg[id]) { try { chartReg[id].destroy(); } catch(e){} delete chartReg[id]; }
+}
 
+function renderCurrent() {
+  switch(cTab) {
+    case 'summary':    renderSummary(); break;
+    case 'weekly':     renderWeekly(); break;
+    case 'leaderboard':renderLeaderboard(); break;
+    case 'threshold':  renderThreshold(); break;
+    case 'charts':     renderCharts(); break;
+    case 'notes':      renderNotes(); break;
+  }
+}
 
-<!-- ════════════════════════════════════════════
-     SHEET 2 — BACK SIDE
-     When sheet is flipped for double-sided printing:
-     Left panel   = back of COVER (inside left when opened)
-     Center panel = back center (inside center)
-     Right panel  = CONTACT — outside back face
-════════════════════════════════════════════ -->
-<div class="sheet">
+// ── SUMMARY ──────────────────────────────────────────────
+function renderSummary() {
+  const el = document.getElementById('p-summary');
+  let best='', bestV=0, topAvgE='', topAvg=0;
+  STAFF.forEach(e=>{ const s=empStats(e); if(s.total>bestV){bestV=s.total;best=e;} if(s.avg>topAvg){topAvg=s.avg;topAvgE=e;} });
+  const teamTotal = STAFF.reduce((a,e)=>a+empStats(e).total, 0);
 
-  <!-- BACK PANEL 1: Back of cover / inside left when opened -->
-  <div class="panel">
-    <span class="sh blue first">Are You Eligible for Beneficiary Travel?</span>
-    <p class="lead">Beneficiary Travel (BT) helps cover your transportation costs to get to VA or VA-authorized medical appointments.</p>
-    <p><b>You qualify if you meet ANY ONE of these:</b></p>
-    <ul class="cl">
-      <li>Traveling for treatment of a <b>service-connected condition</b> (any rating)</li>
-      <li>You have a service-connected rating of <b>30% or more</b> (for any appointment)</li>
-      <li>Traveling for a <b>scheduled C&amp;P exam</b></li>
-      <li>You receive a <b>VA pension</b></li>
-      <li>Your <b>household income</b> is at or below the VA pension rate for your family size</li>
-      <li>Traveling to get a <b>VA-approved service dog</b></li>
-    </ul>
-    <div class="co green"><b>Not sure if you qualify?</b> Call <b>509-434-7517</b> — a staff member will help you find out.</div>
-
-    <span class="sh blue">What travel costs can be reimbursed?</span>
-    <ul class="cl">
-      <li>Mileage at <b>$0.415 per mile</b> (current VA rate)</li>
-      <li>Bus, train, or taxi if medically necessary or no other option</li>
-      <li>Tolls, ferry fares, and bridge fees</li>
-      <li>Meals and lodging <b>only if pre-approved by VA before your trip</b></li>
-    </ul>
-    <div class="co amber"><b>Meals and lodging must be approved BEFORE your trip.</b> If you book a hotel first and ask VA to reimburse it after, it will be denied. Always call us first.</div>
-
-    <span class="sh blue">What is the deductible?</span>
-    <table class="dt">
-      <tr><th>Trip type</th><th>Deductible</th></tr>
-      <tr><td>One-way trip</td><td>$3.00</td></tr>
-      <tr><td>Round trip</td><td>$6.00</td></tr>
-      <tr><td>Monthly maximum</td><td>$18.00 (then free)</td></tr>
-      <tr><td>C&amp;P exam trips</td><td class="free">No deductible</td></tr>
-      <tr><td>Wheelchair van / ambulance</td><td class="free">No deductible</td></tr>
-    </table>
-    <p style="font-size:7pt;color:#546e7a;margin-top:4px;">The deductible may be waived if you receive a VA pension or your income is at or below the VA pension threshold. Ask us at 509-434-7517.</p>
-  </div>
-
-  <!-- BACK PANEL 2: Inside center -->
-  <div class="panel">
-    <span class="sh red first">How to File a Travel Claim</span>
-    <p class="lead">The fastest way to file is online using the <b>Beneficiary Travel Self-Service System (BTSSS)</b> — available 24/7.</p>
-
-    <span class="sh red">File online — BTSSS</span>
-    <div class="step"><div class="sn">1</div><div class="st">Scan the QR code below or type the web address into your browser</div></div>
-    <div class="step"><div class="sn">2</div><div class="st">Sign in with your <b>Login.gov</b> or <b>ID.me</b> account</div></div>
-    <div class="step"><div class="sn">3</div><div class="st">Select <b>"Create New Claim"</b> and enter your appointment date and location</div></div>
-    <div class="step"><div class="sn">4</div><div class="st">Enter your mileage or upload receipts for other expenses</div></div>
-    <div class="step"><div class="sn">5</div><div class="st">Submit — reimbursement usually direct deposited within <b>3–5 business days</b></div></div>
-
-    <div class="qr-block">
-      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODUiIGhlaWdodD0iMTg1IiB2aWV3Qm94PSIwIDAgMTg1IDE4NSI+PHJlY3Qgd2lkdGg9IjE4NSIgaGVpZ2h0PSIxODUiIGZpbGw9IndoaXRlIi8+PGcgZmlsbD0iIzFhM2E1YyI+PHJlY3QgeD0iMjAiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMjUiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMzAiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMzUiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iNDAiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iNDUiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iNTAiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iNjUiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iNzUiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iODAiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iOTAiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iOTUiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMTA1IiB5PSIyMCIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjExNSIgeT0iMjAiIHdpZHRoPSI1IiBoZWlnaHQ9IjUiLz48cmVjdCB4PSIxMzAiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMTM1IiB5PSIyMCIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjE0MCIgeT0iMjAiIHdpZHRoPSI1IiBoZWlnaHQ9IjUiLz48cmVjdCB4PSIxNDUiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMTUwIiB5PSIyMCIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjE1NSIgeT0iMjAiIHdpZHRoPSI1IiBoZWlnaHQ9IjUiLz48cmVjdCB4PSIxNjAiIHk9IjIwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMjAiIHk9IjI1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iNTAiIHk9IjI1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iNjAiIHk9IjI1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iNzUiIHk9IjI1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iODAiIHk9IjI1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iODUiIHk9IjI1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ci8+PHJlY3QgeD0iOTUiIHk9IjI1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMTA1IiB5PSIyNSIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjExNSIgeT0iMjUiIHdpZHRoPSI1IiBoZWlnaHQ9IjUiLz48cmVjdCB4PSIxMzAiIHk9IjI1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMTYwIiB5PSIyNSIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjIwIiB5PSIzMCIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjMwIiB5PSIzMCIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjM1IiB5PSIzMCIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjQwIiB5PSIzMCIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjUwIiB5PSIzMCIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjY1IiB5PSIzMCIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9Ijc1IiB5PSIzMCIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjgwIiB5PSIzMCIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjEzMCIgeT0iMzAiIHdpZHRoPSI1IiBoZWlnaHQ9IjUiLz48cmVjdCB4PSIxNDAiIHk9IjMwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMTQ1IiB5PSIzMCIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjE1MCIgeT0iMzAiIHdpZHRoPSI1IiBoZWlnaHQ9IjUiLz48cmVjdCB4PSIxNjAiIHk9IjMwIiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMjAiIHk9IjM1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMzAiIHk9IjM1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMzUiIHk9IjM1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iNDAiIHk9IjM1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iNTAiIHk9IjM1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iODAiIHk9IjM1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iOTAiIHk9IjM1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iOTUiIHk9IjM1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMTAwIiB5PSIzNSIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjExMCIgeT0iMzUiIHdpZHRoPSI1IiBoZWlnaHQ9IjUiLz48cmVjdCB4PSIxMTUiIHk9IjM1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMTMwIiB5PSIzNSIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjE0MCIgeT0iMzUiIHdpZHRoPSI1IiBoZWlnaHQ9IjUiLz48cmVjdCB4PSIxNDUiIHk9IjM1IiB3aWR0aD0iNSIgaGVpZ2h0PSI1Ii8+PHJlY3QgeD0iMTUwIiB5PSIzNSIgd2lkdGg9IjUiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjE2MCIgeT0iMzUiIHdpZHRoPSI1IiBoZWlnaHQ9IjUiLz48L2c+PC9zdmc+" alt="QR Code — BTSSS">
-      <p class="qr-lbl"><b>Scan to file your travel claim online</b><br>Beneficiary Travel Self-Service System</p>
-      <p class="qr-url">dvagov-btsss.dynamics365portals.us</p>
+  if (cView==='team') {
+    const sorted = [...STAFF].sort((a,b)=>empStats(b).total-empStats(a).total);
+    const rows = sorted.map(e=>{
+      const s=empStats(e);
+      return `<tr><td>${e}</td><td style="font-weight:700;color:#0d9488">${s.total}</td><td>${s.avg.toFixed(1)}</td><td>${s.days}</td></tr>`;
+    }).join('');
+    el.innerHTML = `<div class="sg">
+      <div class="sc t"><div class="lbl">Team Total</div><div class="val">${teamTotal.toLocaleString()}</div><div class="sub">Claims modified</div></div>
+      <div class="sc a"><div class="lbl">Top Producer</div><div class="val">${best.split(' ')[1]}</div><div class="sub">${bestV} claims</div></div>
+      <div class="sc b"><div class="lbl">Best Daily Avg</div><div class="val">${topAvg.toFixed(1)}</div><div class="sub">${topAvgE.split(' ')[0]}</div></div>
+      <div class="sc p"><div class="lbl">Active Staff</div><div class="val">${STAFF.length}</div><div class="sub">Tracked employees</div></div>
     </div>
-
-    <div class="co amber"><b>File within 30 days of your appointment.</b> Claims filed after 30 days are generally not payable.</div>
-
-    <span class="sh blue">Prefer to file in person?</span>
-    <p>Visit the <b>BT office — Main Building, 1st Floor</b>, across from the elevator. Bring your appointment information and any receipts. You can also use the <b>self-service kiosk</b> in the lobby.</p>
-    <div class="co green">We can help you set up BTSSS and file your first claim at our booth today — just ask!</div>
-  </div>
-
-  <!-- BACK PANEL 3: Contact — outside back face -->
-  <div class="panel contact-panel">
-    <div style="text-align:center; margin-bottom:14px;">
-      <div style="width:50px;height:50px;background:#1a3a5c;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:6px;">
-        <span style="font-size:18pt;font-weight:900;color:#fff;">VA</span>
-      </div><br>
-      <span style="font-size:12pt;font-weight:700;color:#0d2137;">Mann-Grandstaff VAMC</span><br>
-      <span style="font-size:9pt;color:#546e7a;">Beneficiary Travel &amp; Transportation Services</span>
+    <div class="st">Team Overview</div>
+    <table><thead><tr><th>Employee</th><th>Total Modified</th><th>Avg/Day</th><th>Days Worked</th></tr></thead><tbody>${rows}</tbody></table>`;
+  } else {
+    const e=cView, s=empStats(e);
+    const rows = filteredWeeks().map(w=>{
+      const t=wTotal(w,e), d=wDays(w,e);
+      return `<tr><td>${w.label}</td><td style="color:#0d9488;font-weight:700">${t}</td><td>${d}</td><td>${d>0?(t/d).toFixed(1):'-'}</td></tr>`;
+    }).join('');
+    el.innerHTML = `<div class="sg">
+      <div class="sc t"><div class="lbl">Total Modified</div><div class="val">${s.total}</div><div class="sub">Since May 1, 2026</div></div>
+      <div class="sc b"><div class="lbl">Daily Avg</div><div class="val">${s.avg.toFixed(1)}</div><div class="sub">Excl. days off</div></div>
+      <div class="sc a"><div class="lbl">Days Worked</div><div class="val">${s.days}</div><div class="sub">Days with output</div></div>
     </div>
+    <div class="st">Weekly Breakdown – ${e}</div>
+    <table><thead><tr><th>Week</th><th>Total</th><th>Days</th><th>Avg/Day</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+}
 
-    <span class="sh blue first">Contact Us</span>
-    <div class="ci">
-      <div class="ci-icon">📞</div>
-      <div><span class="ci-lbl">Phone</span><span class="ci-val">509-434-7517</span><span class="ci-sub">Monday – Friday, 8:00 AM – 4:00 PM</span></div>
-    </div>
-    <div class="ci">
-      <div class="ci-icon">📍</div>
-      <div><span class="ci-lbl">In-Person / Submit Claims</span><span class="ci-val">Main Building, 1st Floor</span><span class="ci-sub">Across from the elevator<br>Mon–Fri, 8:00 AM – 4:00 PM</span></div>
-    </div>
-    <div class="ci">
-      <div class="ci-icon">🚐</div>
-      <div><span class="ci-lbl">Schedule a Ride (VTS)</span><span class="ci-val">Call 509-434-7517</span><span class="ci-sub">Call ahead — rides not guaranteed same-day</span></div>
-    </div>
-    <div class="ci">
-      <div class="ci-icon">💻</div>
-      <div><span class="ci-lbl">File Claims Online</span><span class="ci-val">Scan QR code — inside panel</span><span class="ci-sub">dvagov-btsss.dynamics365portals.us</span></div>
-    </div>
+// ── WEEKLY DETAIL ─────────────────────────────────────────
+function renderWeekly() {
+  const el = document.getElementById('p-weekly');
+  const ws = filteredWeeks();
+  const vs = cView==='team' ? STAFF : [cView];
+  let html = '';
+  ws.forEach(w=>{
+    html += `<div class="st">${w.label}</div><table><thead><tr><th>Employee</th>`;
+    w.days.forEach(d=>{ html+=`<th>${d}</th>`; });
+    html += `<th>Total</th><th>Days</th><th>Avg/Day</th></tr></thead><tbody>`;
+    vs.forEach(e=>{
+      const arr = w.data[e] || w.days.map(()=>0);
+      let tot=0, days=0;
+      html += `<tr><td>${e}</td>`;
+      arr.forEach(v=>{ tot+=v; if(v>0)days++; html+=`<td style="color:${v>0?'#e2e8f0':'#374f6b'}">${v>0?v:'—'}</td>`; });
+      html += `<td style="font-weight:700;color:#0d9488">${tot}</td><td>${days}</td><td>${days>0?(tot/days).toFixed(1):'-'}</td></tr>`;
+    });
+    html += `</tbody></table><br>`;
+  });
+  el.innerHTML = html || '<div class="nodata">No data for selected period.</div>';
+}
 
-    <span class="sh blue">Quick Reminders</span>
-    <ul class="cl">
-      <li>File your claim <b>within 30 days</b> of your appointment</li>
-      <li>Keep receipts for anything other than mileage</li>
-      <li>Meals &amp; lodging must be <b>pre-approved before</b> your trip</li>
-      <li>Community care: save your <b>TriWest authorization number</b></li>
-      <li>Wheelchair van / ambulance requires a <b>provider order in advance</b></li>
-      <li>Not BT eligible? You can still <b>ride VTS for free</b></li>
-      <li>Mileage rate: <b>$0.415 per mile</b></li>
-    </ul>
+// ── LEADERBOARD ───────────────────────────────────────────
+function renderLeaderboard() {
+  const el = document.getElementById('p-leaderboard');
+  const vs = cView==='team' ? STAFF : [cView];
+  const sorted = [...vs].sort((a,b)=>empStats(b).total-empStats(a).total);
+  const mx = empStats(sorted[0]).total || 1;
+  const medals = ['🥇','🥈','🥉'];
+  let rows = sorted.map((e,i)=>{
+    const s=empStats(e), pct=Math.round(s.total/mx*100);
+    return `<tr>
+      <td style="font-weight:700;color:#0d9488">${i+1} ${medals[i]||''}</td>
+      <td>${e}</td>
+      <td style="font-weight:700;color:#0d9488">${s.total}</td>
+      <td>${s.avg.toFixed(1)}</td>
+      <td>${s.days}</td>
+      <td><div style="background:#1e3a5f;border-radius:4px;height:8px;width:120px">
+        <div style="background:#0d9488;height:8px;border-radius:4px;width:${pct}%"></div></div></td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<div class="st">Claims Modified Leaderboard</div>
+  <table><thead><tr><th>Rank</th><th>Employee</th><th>Total</th><th>Avg/Day</th><th>Days</th><th>Progress</th></tr></thead>
+  <tbody>${rows}</tbody></table>`;
+}
 
-    <div class="cta">
-      <p class="cta-sub">Questions? We're here to help.</p>
-      <p class="cta-num">509-434-7517</p>
-      <p class="cta-sub">Mon – Fri &bull; 8:00 AM – 4:00 PM</p>
+// ── 90% THRESHOLD ─────────────────────────────────────────
+function renderThreshold() {
+  const el = document.getElementById('p-threshold');
+  const vs = cView==='team' ? STAFF : [cView];
+  const w1=WEEKS[0], w2=WEEKS[1];
+  let rows = vs.map(e=>{
+    const b=wTotal(w1,e), p2=wTotal(w2,e), tgt=Math.ceil(b*0.9);
+    let pill, note;
+    if (b===0) { pill=`<span class="pill am">N/A</span>`; note='No baseline output'; }
+    else if (p2>=tgt) { pill=`<span class="pill g">✓ Met</span>`; note=`+${p2-tgt} above threshold`; }
+    else { pill=`<span class="pill r">✗ Missed</span>`; note=`${tgt-p2} claims short`; }
+    return `<tr><td>${e}</td><td>${b}</td><td>${p2}</td><td>${b>0?tgt:'—'}</td><td>${pill}</td><td style="font-size:12px;color:#64748b">${note}</td></tr>`;
+  }).join('');
+  el.innerHTML = `<div class="st">90% Threshold – Policy Effective May 2026</div>
+  <p style="font-size:12px;color:#64748b;margin-bottom:12px">Baseline: May 4–8 &nbsp;|&nbsp; Comparison: May 11–16 &nbsp;|&nbsp;
+  90%+ = <span style="color:#10b981">Met</span> &nbsp;|&nbsp; Below 90% = <span style="color:#ef4444">Missed</span></p>
+  <table><thead><tr><th>Employee</th><th>Baseline (May 4–8)</th><th>Period 2 (May 11–16)</th><th>90% Target</th><th>Status</th><th>Notes</th></tr></thead>
+  <tbody>${rows}</tbody></table>`;
+}
+
+// ── CHARTS ────────────────────────────────────────────────
+function renderCharts() {
+  const el = document.getElementById('p-charts');
+  const vs = cView==='team' ? STAFF : [cView];
+  ['ch-bar','ch-avg','ch-wow'].forEach(destroyChart);
+
+  const totals = vs.map(e=>empStats(e).total);
+  const avgs   = vs.map(e=>parseFloat(empStats(e).avg.toFixed(1)));
+  const w1t    = vs.map(e=>wTotal(WEEKS[0],e));
+  const w2t    = vs.map(e=>wTotal(WEEKS[1],e));
+  const clrs   = ['#0d9488','#3b82f6','#8b5cf6','#f59e0b','#10b981','#ef4444','#06b6d4','#a855f7','#f97316'];
+  const bh     = Math.max(280, vs.length*44);
+
+  el.innerHTML = `
+  <div class="cb"><h3>Total claims modified by employee</h3>
+    <div style="position:relative;width:100%;height:${bh}px"><canvas id="ch-bar" role="img" aria-label="Total claims modified per employee"></canvas></div></div>
+  <div class="cb"><h3>Daily average – active days only</h3>
+    <div style="position:relative;width:100%;height:${bh}px"><canvas id="ch-avg" role="img" aria-label="Daily average claims per employee"></canvas></div></div>
+  <div class="cb"><h3>Week-over-week comparison</h3>
+    <div style="display:flex;gap:14px;margin-bottom:8px;font-size:12px;color:#94a3b8">
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#0d9488;margin-right:4px"></span>May 4–8</span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#3b82f6;margin-right:4px"></span>May 11–16</span>
     </div>
-    <p class="footer-note">Mann-Grandstaff VA Medical Center<br>4815 N Assembly St, Spokane, WA 99205<br>va.gov/spokane-health-care</p>
-  </div>
+    <div style="position:relative;width:100%;height:${bh}px"><canvas id="ch-wow" role="img" aria-label="Week over week comparison"></canvas></div></div>`;
 
-</div><!-- end sheet 2 -->
+  // Use requestAnimationFrame to ensure canvases are painted before Chart.js touches them
+  requestAnimationFrame(()=>{
+    const c1=document.getElementById('ch-bar');
+    const c2=document.getElementById('ch-avg');
+    const c3=document.getElementById('ch-wow');
+    if (!c1||!c2||!c3) return;
 
-</body>
-</html>
+    const baseOpts = (data, lbl) => ({
+      type:'bar',
+      data:{ labels:vs, datasets:[{ label:lbl, data, backgroundColor:vs.map((_,i)=>clrs[i%clrs.length]), borderRadius:4 }] },
+      options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false} },
+        scales:{ x:{ticks:{color:'#64748b'},grid:{color:'#1e3a5f'}}, y:{ticks:{color:'#94a3b8'},grid:{color:'#1e3a5f'}} } }
+    });
+
+    try { chartReg['ch-bar'] = new Chart(c1, baseOpts(totals,'Claims')); } catch(e){}
+    try { chartReg['ch-avg'] = new Chart(c2, baseOpts(avgs,'Avg/Day')); } catch(e){}
+    try {
+      chartReg['ch-wow'] = new Chart(c3, {
+        type:'bar',
+        data:{ labels:vs, datasets:[
+          { label:'May 4–8',   data:w1t, backgroundColor:'#0d9488', borderRadius:3 },
+          { label:'May 11–16', data:w2t, backgroundColor:'#3b82f6', borderRadius:3 }
+        ]},
+        options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{display:false} },
+          scales:{ x:{ticks:{color:'#64748b'},grid:{color:'#1e3a5f'}}, y:{ticks:{color:'#94a3b8'},grid:{color:'#1e3a5f'}} } }
+      });
+    } catch(e){}
+  });
+}
+
+// ── PERFORMANCE NOTES ─────────────────────────────────────
+const NOTES = {
+  'Tyler Daley':       {str:'Top producer YTD with 661 claims. Rose significantly in Week 2 (459 vs 202), including a standout 163-claim Friday. Consistent presence every active day.',dev:'Monitor whether large single-day spikes reflect backlog clearing vs. sustained daily pace.',goal:'Maintain 90%+ threshold compliance bi-weekly. Explore peer mentoring opportunities.'},
+  'Brandon Long':      {str:'Second highest YTD (539). Exceptional Week 1 with 344 — highest single-week total on the team. Present all 5 days in Week 1.',dev:'Week 2 dropped to 195, triggering a missed threshold. Investigate workload or scheduling changes.',goal:'Stabilize above 190 claims/week. Target consistent 35–45 claims/day floor.'},
+  'Charles Stidham':   {str:'Strong both weeks — 110 in Week 1 (3 days) and 256 in Week 2 (4 days). High burst capacity with 106 claims on one Monday.',dev:'Thursday Week 2 dropped to 2 claims. Irregular daily patterns suggest possible interruptions.',goal:'Build to 4–5 active days/week. Target 55+ claims/day consistently.'},
+  'Stephanie Miles':   {str:'Consistent contributor both weeks — 184 in Week 1 and 147 in Week 2. Balanced daily distribution and strong Friday output (80 in Week 1).',dev:'Week 2 dip triggers a missed threshold. Review if reduced days or low Friday output is a pattern.',goal:'Hold output above 165 claims/week. Aim for 35+ claims/day every active day.'},
+  'Elizabeth Grimes':  {str:'Improved week-over-week: 50 in Week 1 (2 days) to 97 in Week 2 (3 days). Strong single-day capacity — 54 on May 14.',dev:'Only 2–3 active days per week limits total volume.',goal:'Increase to 4 active days/week. Target 40+ claims/day when present.'},
+  'Joseph Jensen':     {str:'27 claims in Week 1 and 37 in Week 2 — slight upward trend. Strong single-day output when active (36 on May 14).',dev:'Only 2 active days each week significantly limits total volume.',goal:'Build to 3–4 active days/week. Target 20+ claims/day as benchmark.'},
+  'Kayla Bergfeld':    {str:'More active in Week 1 (4 days, 20 claims). Consistent daily presence shows engagement and availability.',dev:'Low volume output both weeks. Role scope or access may be limiting throughput.',goal:'Clarify role and remove barriers. If processing is primary, target 15+ claims/day.'},
+  'Rosemary Fulkerson':{str:'Active in Week 2 only — 32 claims over 2 days. Shows solid output when present.',dev:'No Week 1 activity. Baseline cannot yet be established. Needs consistent presence.',goal:'Establish regular weekly presence and a defined daily output target by end of May.'},
+  'Travis Murphy':     {str:'Present both weeks — 16 in Week 1 (1 day) and 11 in Week 2 (3 days). Shows consistent engagement.',dev:'Very low volume overall. Investigate whether access, training, or assignment is the root cause.',goal:'Target 10+ claims/day as initial benchmark. Identify and remove processing barriers.'}
+};
+
+function renderNotes() {
+  const el = document.getElementById('p-notes');
+  const vs = cView==='team' ? STAFF : [cView];
+  let html = `<div class="st">Individual Performance Notes – FY2026</div>`;
+  vs.forEach(e=>{
+    const s=empStats(e), n=NOTES[e]||{str:'Insufficient data.',dev:'Monitor additional weeks.',goal:'Establish baseline.'};
+    let bestWk='', bestWkV=0;
+    WEEKS.forEach(w=>{ const t=wTotal(w,e); if(t>bestWkV){bestWkV=t;bestWk=w.label;} });
+    html += `<div class="nc">
+      <h3>${e}</h3>
+      <div class="yl">YTD Total: <strong style="color:#0d9488">${s.total}</strong> claims &nbsp;|&nbsp; Avg: <strong>${s.avg.toFixed(1)}/day</strong> &nbsp;|&nbsp; Days: <strong>${s.days}</strong> &nbsp;|&nbsp; Best week: <strong>${bestWk} (${bestWkV})</strong></div>
+      <div class="ns s"><div class="nt">Strengths</div><p>${n.str}</p></div>
+      <div class="ns d"><div class="nt">Development areas</div><p>${n.dev}</p></div>
+      <div class="ns gl"><div class="nt">Goals / Next steps</div><p>${n.goal}</p></div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+// Initial render
+renderCurrent();
+</script>
+</body></html>
